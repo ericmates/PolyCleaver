@@ -1,6 +1,5 @@
 from pymatgen.core.surface import SlabGenerator, generate_all_slabs, get_symmetrically_distinct_miller_indices
 from pymatgen.analysis.structure_matcher import StructureMatcher
-import pandas
 import itertools
 import os, copy, sys
 
