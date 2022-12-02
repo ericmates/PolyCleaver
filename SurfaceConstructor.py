@@ -1,5 +1,4 @@
-from pymatgen.io.ase import AseAtomsAdaptor as ac
-from pymatgen.core.surface import SlabGenerator, generate_all_slabs, get_symmetrically_distinct_miller_indices, center_slab
+from pymatgen.core.surface import SlabGenerator, generate_all_slabs, get_symmetrically_distinct_miller_indices
 from pymatgen.analysis.structure_matcher import StructureMatcher
 import pandas
 import itertools
