@@ -2,7 +2,7 @@
 
 A repository for the generation of non-polar, neutral surfaces from ionic compounds with polyatomic anions.
 
-PolyCleaver is a robust algorithm that allows for the generation of high quality vacuum-containing surfaces from bulk structures of mineral structures characterised as **ionic compounds with polyatomic anions** (e.g., Mg<sub>2</sub>SiO<sub>4</sub>). These include **silicates**, **sulfides**, **carbonates**, **oxides**, **halides**, **sulfates** and **phosphates**, among others. Similar structures, such as triatomic **perovskites**, are also supported. This algorithm is built around the *pymatgen* library, allowing for a high degree of customization and future enhancement for other ionic compounds. Surfaces generated using the PolyCleaver algorithm are:
+PolyCleaver is a robust Python-based algorithm that allows for the generation of high quality vacuum-containing surfaces from bulk structures of mineral structures characterised as **ionic compounds with polyatomic anions** (e.g., Mg<sub>2</sub>SiO<sub>4</sub>). These include **silicates**, **sulfides**, **carbonates**, **oxides**, **halides**, **sulfates** and **phosphates**, among others. Similar structures, such as triatomic **perovskites**, are also supported. This algorithm is built around the *pymatgen* library, allowing for a high degree of customization and future enhancement for other ionic compounds. Surfaces generated using the PolyCleaver algorithm are:
 
 1. **Non-polar**, allowing accurate surface reactivity calculations.
 2. **Stoichiometric** with respect to their bulk composition, maintaining per-atom charges.
