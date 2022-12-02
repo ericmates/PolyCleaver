@@ -27,6 +27,7 @@ class BulkUnit():
             bulk: pymatgen.core.structure.Structure object.
         """
         self.atoms = bulk
+        self.bulk = self
         self.set_site_attributes(self.atoms)
         self.anion = self.anions[0].element
         self.center = self.centers[0].element
@@ -44,7 +45,7 @@ class BulkUnit():
         Returns:
             (list): PeriodicSite objects of all anions.
         """
-        anions = [ atom for atom in self.atoms if '-' in atom.species_string ]
+        anions = [ atom for atom in self.atoms if atom.oxidation_state < 0 ]
         if len(anions) == 0:
             raise ValueError('No anions could be found.')
         return anions
@@ -61,11 +62,12 @@ class BulkUnit():
         Returns:
             (list): PeriodicSite objects of all covalent anionic unit centers.
         """
-        center = [ atom for atom in self.atoms.get_neighbors(self.anions[len(self.anions)//2], 2)
-                        if '+' in atom.species_string ][0]
+        anion_neighbors = [ self.atoms.get_neighbors(atom, 2) for atom in self.anions ]
+        anion_neighbors = [ neighbor[0] for neighbor in anion_neighbors if neighbor != [] ]
+        center = list({object_.species_string: object_ for object_ in anion_neighbors}.values())
         if len(center) == 0:
             raise ValueError('No polyatomic anions could be found.')
-        centers = [ atom for atom in self.atoms if atom.species_string == center.species_string ]
+        centers = [ atom for atom in self.atoms if atom.species_string == center[0].species_string ]
         return centers
 
     @property
@@ -82,10 +84,10 @@ class BulkUnit():
         """
         all_cations = [ atom for atom in self.atoms
                             if atom.species_string != self.centers[0].species_string
-                            and '-' not in atom.species_string ]
+                            and atom.oxidation_state > 0 ]
         if len(all_cations) == 0:
             raise ValueError('No cations could be found.')
-        unique_cations = list({object_.species_string: object_ for object_ in all_cations}.values())
+        # unique_cations = list({object_.species_string: object_ for object_ in all_cations}.values())
         return all_cations
 
     @staticmethod
@@ -110,7 +112,11 @@ class BulkUnit():
             Returns:
                 (int): coordination number of the selected site.
             """
-            neighborlist = structure.get_neighbors(site, 2.3)
+            distance_nn = min(
+                                [structure.get_distance(site.index, atom.index)
+                                 for atom in structure.get_neighbors(site, 3.5)]
+                             ) + 0.2
+            neighborlist = structure.get_neighbors(site, distance_nn)
             coordination_number = len(neighborlist)
             return coordination_number
 
@@ -138,13 +144,13 @@ class BulkUnit():
         ####
         for site in structure:
             site.index = structure.index(site)
-            site.coordination_number = coordination_number(site, structure)
             site.cluster = cluster(site, structure)
+            site.coordination_number = coordination_number(site, structure)
             site.element = site.as_dict()['species'][0]['element']
             site.oxidation_state = site.as_dict()['species'][0]['oxidation_state']
-        for site in structure:
-            max_coordination_number = max([atom.coordination_number for atom in structure if atom.element == site.element])
-            site.undercoordinated = True if site.coordination_number < max_coordination_number else False
+        # for site in structure:
+        #     max_coordination_number = max([atom.coordination_number for atom in structure if atom.element == site.element])
+        #     site.undercoordinated = True if site.coordination_number < max_coordination_number else False
 
 class SlabUnit(BulkUnit):
     """
@@ -197,10 +203,13 @@ class SlabUnit(BulkUnit):
         Returns:
             (int): number of undercoordinated sites.
         """
-        coordination_numbers = self.coordination_numbers(sites)
+        coord_no_bulk = [ site.coordination_number for site in self.bulk.atoms if site.element == sites[0].element ][0]
+        # coord_no_bulk = len(self.bulk.atoms.get_neighbors(
+        #                    [site for site in self.bulk.atoms if site.element == sites[0].element][0], 2.3)
+        #                                                  )
         undercoordinated_sites = []
         for index, site in enumerate(sites):
-            if site.coordination_number < max(coordination_numbers):
+            if site.coordination_number < coord_no_bulk:
                 undercoordinated_sites.append(site)
         return undercoordinated_sites
 
@@ -227,8 +236,11 @@ class SlabUnit(BulkUnit):
         Returns:
             (list): PeriodicSite objects of lone anions.
         """
-        anions_list = [ atom for atom in self.anions
-                             if self.bulk.centers[0].species_string not in [ site.species_string for site in atom.cluster ] ]
+        anions_list = [
+                        atom for atom in self.anions
+                             if self.bulk.centers[0].species_string not in
+                             [site.species_string for site in atom.cluster]
+                      ]
         return anions_list
 
     @property
@@ -281,7 +293,7 @@ class SlabUnit(BulkUnit):
         Args:
             element: element of site to be investigated, as string (e.g., 'Fe').
         """
-        atoms_list = [atom for atom in self.atoms if atom.element == site]
+        atoms_list = [atom for atom in self.atoms if atom.element == element]
         atoms_list.sort(key=lambda x: x.z)
         return atoms_list[-1]
 
@@ -292,7 +304,7 @@ class SlabUnit(BulkUnit):
         Args:
             element: element of site to be investigated, as string (e.g., 'Fe').
         """
-        atoms_list = [atom for atom in self.atoms if atom.element == site]
+        atoms_list = [atom for atom in self.atoms if atom.element == element]
         atoms_list.sort(key=lambda x: x.z)
         return atoms_list[0]
 
@@ -315,18 +327,26 @@ class SlabUnit(BulkUnit):
         template = copy.deepcopy(self)
         sites_to_remove = []
         approach_value = 'top'
-        while ( template.atoms.is_polar(tol_dipole_per_unit_area=0.05) and template.bulk.center in template.atoms.formula ):
-            _sites_to_remove = template.top_site(template.bulk.center).cluster
-            template.remove_sites(_sites_to_remove)
-            sites_to_remove.extend(_sites_to_remove)
+        while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+               template.bulk.center in template.atoms.formula or
+               len(template.centers)%2 != len(template.bulk.centers)%2 if template.bulk.center in template.atoms.formula
+                                                                       else False):
+                _sites_to_remove = template.top_site(template.bulk.center).cluster
+                template.remove_sites(_sites_to_remove)
+                sites_to_remove.extend(_sites_to_remove)
         if not template.bulk.center in template.atoms.formula:
+            template = copy.deepcopy(self)
+            sites_to_remove = []
             approach_value = 'bot'
             sites_to_remove = []
-            while ( template.atoms.is_polar(tol_dipole_per_unit_area=0.05) and template.bulk.center in template.atoms.formula ):
+            while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+                   template.bulk.center in template.atoms.formula or
+                   len(template.centers)%2 != len(template.bulk.centers)%2 if template.bulk.center in template.atoms.formula
+                                                                           else False):
                 _sites_to_remove = template.bottom_site(template.bulk.center).cluster
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
-        self.remove_sites(sites_to_remove)
+        self.remove_sites(sites_to_remove) if template.atoms.formula != '' else None
         return approach_value
 
     def depolarize_cations(self, topbot=None):
@@ -341,7 +361,8 @@ class SlabUnit(BulkUnit):
         """
         atomlist = sorted(self.cations, key=lambda x: x.z)
         a = 0
-        while self.atoms.is_polar(tol_dipole_per_unit_area=0.05) and self.bulk.cation in self.atoms.formula and self.atoms.composition.fractional_composition != self.bulk.atoms.composition.fractional_composition:
+        while (self.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+               len(self.cations)/len(self.centers) > len(self.bulk.cations)/len(self.bulk.centers)):
             a += -1 if topbot == 'top' else 0
             self.remove_sites([atomlist[a]])
             a += 1 if topbot == 'bot' else 0
@@ -351,9 +372,10 @@ class SlabUnit(BulkUnit):
         Removes cations from a non-polar slab until composition
         matches the bulk stoichiometry.
         """
-        atomlist = sorted(self.cations, key=lambda x: x.z)
+        atomlist = sorted(self.cations, key=lambda x: x.z) if self.bulk.cation in self.atoms.formula else None
         a = 0
-        while self.atoms.composition.fractional_composition != self.bulk.atoms.composition.fractional_composition and self.bulk.cation in self.atoms.formula:
+        while (self.atoms.composition.fractional_composition != self.bulk.atoms.composition.fractional_composition and
+               self.bulk.cation in self.atoms.formula):
             self.remove_sites([atomlist[a]])
             a = a * -1 if a < 0 else a * -1 - 1
 
@@ -414,21 +436,22 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
         hkl_list = get_symmetrically_distinct_miller_indices(bulk, hkl)
     if isinstance(hkl, list):
         hkl_list = hkl
+    print(f'Miller indices that will be analysed: {", ".join([str(hkl) for hkl in hkl_list])}')
     for hkl in hkl_list:
         slabgen = SlabGenerator(bulk_obj.atoms, hkl, thickness, vacuum, center_slab=True)
-        all_slabs.extend(slabgen.get_slabs(ftol=0.01, repair=False))
+        all_slabs.extend(slabgen.get_slabs())
 
     valid_slabs = []
     for slab in all_slabs:
-        if not slab.is_polar(tol_dipole_per_unit_area=0.05):
+        if not slab.is_polar(tol_dipole_per_unit_area=0.01):
             valid_slabs.append(slab)
         else:
             slab_tk_l = slab.get_tasker2_slabs(tol=0.01)
             for slab_tk in slab_tk_l:
-                if not slab_tk.is_polar(tol_dipole_per_unit_area=0.05):
+                if not slab_tk.is_polar(tol_dipole_per_unit_area=0.01):
                     valid_slabs.append(slab_tk)
     for slab in all_slabs:
-        if slab.is_polar(tol_dipole_per_unit_area=0.05):
+        if slab.is_polar(tol_dipole_per_unit_area=0.01):
             valid_slabs.append(slab)
     print(f'{len(valid_slabs)} preliminary slabs generated.')
 
@@ -440,19 +463,24 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
                          .format('='*int(percent/(100.0/30)),
                                  30, int(percent)))
         initial_slab = slab.get_orthogonal_c_slab()
+
         scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
-        while scaffold.clusters_to_remove + scaffold.lone_anions != []:
+
+        while (scaffold.clusters_to_remove + scaffold.lone_anions != [] if scaffold.bulk.center in scaffold.atoms.formula else False):
             scaffold.remove_sites(scaffold.clusters_to_remove + scaffold.lone_anions)
+        if scaffold.bulk.center not in scaffold.atoms.formula:
+            continue
         scaffold.remove_element(scaffold.bulk.cation)
         topbot = scaffold.depolarize_anions()
         reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
         reconstruction.remove_sites([site for site in reconstruction.atoms
                                           if site not in scaffold.atoms
                                           and site.element != reconstruction.bulk.cation])
-
         reconstruction.depolarize_cations(topbot)
         reconstruction.stoichiometrize()
-        if not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.05):
+        if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+            reconstruction.bulk.cation in reconstruction.atoms.formula and
+            reconstruction.undercoordinated_sites(reconstruction.centers) == []):
             reconstruction.set_site_attributes(reconstruction.atoms)
             final_slabs.append(reconstruction)
         sys.stdout.flush()
