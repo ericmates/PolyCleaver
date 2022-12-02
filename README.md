@@ -28,31 +28,29 @@ from pymatgen.ext.matproj import MPRester
 
 with MPRester("API_Key (obtainable in the MaterialsProject website)") as m:
     bulk = m.get_structure_by_material_id("mp-3164")
-```
 
-Generating all possible slabs is straightforward:
+# Generating all possible slabs is straightforward:
 
-```python
 from PolyCleaver import *
 
 hkl = [(0,0,1), (0,1,0)] # We can specify the set of Miller indices to generate the surfaces,
 hkl = 1                  # or we can specify the maximum Miller index that we want to analyse, 
-                           and the algorithm will investigate all non-equivalent Miller indices
-                           using pymatgen's get_symmetrically_distinct_miller_indices function.
+                         # and the algorithm will investigate all non-equivalent Miller indices
+                         # using pymatgen's get_symmetrically_distinct_miller_indices function.
                            
 slabs = generate_slabs(bulk, hkl)
 ```
 
 All slabs will then be generated and stored as a list of SlabUnit objects, which are a wrap of the Slab object of pymatgen containing a set of additional structural parameters. For instance, for any slab in "slabs":
 
-slab.atoms: accesses the Slab object of pymatgen, which we can then save as follows:
+- slab.atoms: accesses the Slab object of pymatgen, which we can then save as follows:
 
             slab.to_file('file.cif')
 
-slab.anions / slab.cations / slab.centers: outputs all anions, cations and cationic centers of the polyatomic anions as a list of sites.
+- slab.anions / slab.cations / slab.centers: outputs all anions, cations and cationic centers of the polyatomic anions as a list of sites.
 
-slab.undercoordinated_sites(sites): gives an integer with the number of undercoordinated sites in the slab from a list of sites. This can be combined   with the previous attribute to obtain the number of undercoordinated surface cations in the final slabs:
+- slab.undercoordinated_sites(sites): gives an integer with the number of undercoordinated sites in the slab from a list of sites. This can be combined   with the previous attribute to obtain the number of undercoordinated surface cations in the final slabs:
 
             slab.undercoordinated_sites(slab.cations)
 
-slab.thickness: gives the thickness of the slab, in Å.
+- slab.thickness: gives the thickness of the slab, in Å.
