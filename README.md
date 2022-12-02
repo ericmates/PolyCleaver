@@ -44,9 +44,15 @@ slabs = generate_slabs(bulk, hkl)
 ```
 
 All slabs will then be generated and stored as a list of SlabUnit objects, which are a wrap of the Slab object of pymatgen containing a set of additional structural parameters. For instance, for any slab in "slabs":
+
 slab.atoms: accesses the Slab object of pymatgen, which we can then save as follows:
+
             slab.to_file('file.cif')
+
 slab.anions / slab.cations / slab.centers: outputs all anions, cations and cationic centers of the polyatomic anions as a list of sites.
+
 slab.undercoordinated_sites(sites): gives an integer with the number of undercoordinated sites in the slab from a list of sites. This can be combined   with the previous attribute to obtain the number of undercoordinated surface cations in the final slabs:
+
             slab.undercoordinated_sites(slab.cations)
+
 slab.thickness: gives the thickness of the slab, in Å.
