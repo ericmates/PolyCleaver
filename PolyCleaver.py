@@ -15,7 +15,7 @@ class BulkUnit():
         Makes a BulkUnit structure, wrapped around a Structure
         pymatgen class, containing geometrical parameters of
         the cations (e.g. Mg2+), anions (e.g. O2-) and
-        anion centers (e.g. Si4-). A pymatgen Structure object
+        anion centers (e.g. Si4+). A pymatgen Structure object
         can be obtained by calling the 'atoms' attribute.
         The element forming anions, centers and cations can be
         obtained with the 'anion', 'center' and 'cation' attributes,
@@ -110,12 +110,15 @@ class BulkUnit():
             Returns:
                 (int): coordination number of the selected site.
             """
-            distance_nn = min(
-                                [structure.get_distance(site.index, atom.index)
-                                 for atom in structure.get_neighbors(site, 3.5)]
-                             ) + 0.2
-            neighborlist = structure.get_neighbors(site, distance_nn)
-            coordination_number = len(neighborlist)
+            try:
+                distance_nn = min(
+                                    [structure.get_distance(site.index, atom.index)
+                                     for atom in structure.get_neighbors(site, 3.5)]
+                                 ) + 0.2
+                neighborlist = structure.get_neighbors(site, distance_nn)
+                coordination_number = len(neighborlist)
+            except ValueError:
+                coordination_number = 0
             return coordination_number
 
         def cluster(site, structure):
