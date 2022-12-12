@@ -27,9 +27,10 @@ class BulkUnit():
         self.atoms = bulk
         self.bulk = self
         self.set_site_attributes(self.atoms)
-        self.anion = self.anions[0].element
-        self.center = self.centers[0].element
-        self.cation = self.cations[0].element
+        global anion_str, center_str, cations_strs
+        anion_str = self.bulk.anions[0].element
+        center_str = self.bulk.centers[0].element
+        cations_strs = [ atom.element for atom in list({object_.species_string: object_ for object_ in self.bulk.cations}.values())]
 
     @property
     def anions(self):
@@ -81,11 +82,10 @@ class BulkUnit():
             (list): PeriodicSite objects of all cations.
         """
         all_cations = [ atom for atom in self.atoms
-                            if atom.species_string != self.centers[0].species_string
+                            if atom.element != center_str
                             and atom.oxidation_state > 0 ]
         if len(all_cations) == 0:
             raise ValueError('No cations could be found.')
-        # unique_cations = list({object_.species_string: object_ for object_ in all_cations}.values())
         return all_cations
 
     @staticmethod
@@ -236,10 +236,13 @@ class SlabUnit(BulkUnit):
         """
         anions_list = [
                         atom for atom in self.anions
-                             if self.bulk.centers[0].species_string not in
-                             [site.species_string for site in atom.cluster]
+                             if center_str not in
+                             [site.as_dict()['species'][0]['element'] for site in atom.cluster]
                       ]
         return anions_list
+
+    def there_are_cations(self):
+        return any([cation in self.atoms.formula for cation in cations_strs])
 
     @property
     def clusters_to_remove(self):
@@ -272,7 +275,7 @@ class SlabUnit(BulkUnit):
         for site in [atom for atom in self.atoms if atom not in template]:
             self.atoms.remove(site)
 
-    def remove_element(self, element):
+    def remove_element(self, elements):
         """
         Similarly to the 'remove_sites' function, this function removes
         all sites of a certain element.
@@ -280,7 +283,7 @@ class SlabUnit(BulkUnit):
         Args:
             element: element to be removed, as string (e.g., 'Fe').
         """
-        atoms_list = [site for site in self.atoms if site.element == element]
+        atoms_list = [site for site in self.atoms if site.element in elements]
         for atom in atoms_list:
             self.atoms.remove(atom)
 
@@ -326,22 +329,24 @@ class SlabUnit(BulkUnit):
         sites_to_remove = []
         approach_value = 'top'
         while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
-               template.bulk.center in template.atoms.formula or
-               len(template.centers)%2 != len(template.bulk.centers)%2 if template.bulk.center in template.atoms.formula
+               center_str in template.atoms.formula or
+               len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
+                                                                       and anion_str in template.atoms.formula)
                                                                        else False):
-                _sites_to_remove = template.top_site(template.bulk.center).cluster
+                _sites_to_remove = template.top_site(center_str).cluster
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
-        if not template.bulk.center in template.atoms.formula:
+        if not center_str in template.atoms.formula:
             template = copy.deepcopy(self)
             sites_to_remove = []
             approach_value = 'bot'
             sites_to_remove = []
             while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
-                   template.bulk.center in template.atoms.formula or
-                   len(template.centers)%2 != len(template.bulk.centers)%2 if template.bulk.center in template.atoms.formula
+                   center_str in template.atoms.formula or
+                   len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
+                                                                           and anion_str in template.atoms.formula)
                                                                            else False):
-                _sites_to_remove = template.bottom_site(template.bulk.center).cluster
+                _sites_to_remove = template.bottom_site(center_str).cluster
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
         self.remove_sites(sites_to_remove) if template.atoms.formula != '' else None
@@ -359,8 +364,9 @@ class SlabUnit(BulkUnit):
         """
         atomlist = sorted(self.cations, key=lambda x: x.z)
         a = 0
+        ratio_bulk = len(self.bulk.cations)/len(self.bulk.centers)
         while (self.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
-               len(self.cations)/len(self.centers) > len(self.bulk.cations)/len(self.bulk.centers)):
+               len(self.cations)/len(self.centers) > ratio_bulk):
             a += -1 if topbot == 'top' else 0
             self.remove_sites([atomlist[a]])
             a += 1 if topbot == 'bot' else 0
@@ -370,10 +376,10 @@ class SlabUnit(BulkUnit):
         Removes cations from a non-polar slab until composition
         matches the bulk stoichiometry.
         """
-        atomlist = sorted(self.cations, key=lambda x: x.z) if self.bulk.cation in self.atoms.formula else None
+        atomlist = sorted(self.cations, key=lambda x: x.z) if self.there_are_cations() else None
+        ratio_bulk = len(self.bulk.cations)/len(self.bulk.centers)
         a = 0
-        while (self.atoms.composition.fractional_composition != self.bulk.atoms.composition.fractional_composition and
-               self.bulk.cation in self.atoms.formula):
+        while (len(self.cations)/len(self.anions) >= ratio_bulk):
             self.remove_sites([atomlist[a]])
             a = a * -1 if a < 0 else a * -1 - 1
 
@@ -464,22 +470,22 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
 
         scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
 
-        while (scaffold.clusters_to_remove + scaffold.lone_anions != [] if scaffold.bulk.center in scaffold.atoms.formula else False):
+        while (scaffold.clusters_to_remove + scaffold.lone_anions != [] if center_str in scaffold.atoms.formula else False):
             scaffold.remove_sites(scaffold.clusters_to_remove + scaffold.lone_anions)
-        if scaffold.bulk.center not in scaffold.atoms.formula:
+        if center_str not in scaffold.atoms.formula:
             continue
-        scaffold.remove_element(scaffold.bulk.cation)
+        scaffold.remove_element(cations_strs)
         topbot = scaffold.depolarize_anions()
         reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
         reconstruction.remove_sites([site for site in reconstruction.atoms
                                           if site not in scaffold.atoms
-                                          and site.element != reconstruction.bulk.cation])
+                                          and site.element not in cations_strs])
         reconstruction.depolarize_cations(topbot)
         reconstruction.stoichiometrize()
+        reconstruction.set_site_attributes(reconstruction.atoms)
         if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
-            reconstruction.bulk.cation in reconstruction.atoms.formula and
+            reconstruction.there_are_cations() and
             reconstruction.undercoordinated_sites(reconstruction.centers) == []):
-            reconstruction.set_site_attributes(reconstruction.atoms)
             final_slabs.append(reconstruction)
         sys.stdout.flush()
 
