@@ -15,7 +15,7 @@ class BulkUnit():
         Makes a BulkUnit structure, wrapped around a Structure
         pymatgen class, containing geometrical parameters of
         the cations (e.g. Mg2+), anions (e.g. O2-) and
-        anion centers (e.g. Si4+). A pymatgen Structure object
+        anion centers (e.g. Si4-). A pymatgen Structure object
         can be obtained by calling the 'atoms' attribute.
         The element forming anions, centers and cations can be
         obtained with the 'anion', 'center' and 'cation' attributes,
@@ -61,7 +61,7 @@ class BulkUnit():
         Returns:
             (list): PeriodicSite objects of all covalent anionic unit centers.
         """
-        anion_neighbors = [ self.atoms.get_neighbors(atom, 2) for atom in self.anions ]
+        anion_neighbors = [ self.atoms.get_neighbors(atom, 1.8) for atom in self.anions ]
         anion_neighbors = [ neighbor[0] for neighbor in anion_neighbors if neighbor != [] ]
         center = list({object_.species_string: object_ for object_ in anion_neighbors}.values())
         if len(center) == 0:
@@ -380,9 +380,9 @@ class SlabUnit(BulkUnit):
         matches the bulk stoichiometry.
         """
         atomlist = sorted(self.cations, key=lambda x: x.z) if self.there_are_cations() else None
-        ratio_bulk = len(self.bulk.cations)/len(self.bulk.centers)
         a = 0
-        while (len(self.cations)/len(self.anions) >= ratio_bulk):
+        while (self.atoms.composition.fractional_composition != self.bulk.atoms.composition.fractional_composition and
+               self.there_are_cations()):
             self.remove_sites([atomlist[a]])
             a = a * -1 if a < 0 else a * -1 - 1
 
