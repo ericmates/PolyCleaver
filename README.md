@@ -45,7 +45,7 @@ All slabs will then be generated and stored as a list of SlabUnit objects, which
 
 - slab.atoms: accesses the Slab object of pymatgen, which we can then save as follows:
 
-            slab.to_file('file.cif')
+            slab.atoms.to_file('file.cif')
 
 - slab.anions / slab.cations / slab.centers: outputs all anions, cations and cationic centers of the polyatomic anions as a list of sites.
 
