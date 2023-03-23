@@ -44,7 +44,9 @@ class BulkUnit():
         Returns:
             (list): PeriodicSite objects of all anions.
         """
-        anions = [ atom for atom in self.atoms if atom.oxidation_state < 0 ]
+        sites = np.array(self.atoms.sites)
+        mask = [site.specie.oxi_state < 0 for site in sites]
+        anions = sites[mask]
         if len(anions) == 0:
             raise ValueError('No anions could be found.')
         return anions
@@ -61,12 +63,12 @@ class BulkUnit():
         Returns:
             (list): PeriodicSite objects of all covalent anionic unit centers.
         """
-        anion_neighbors = [ self.atoms.get_neighbors(atom, 1.8) for atom in self.anions ]
-        anion_neighbors = [ neighbor[0] for neighbor in anion_neighbors if neighbor != [] ]
-        center = list({object_.species_string: object_ for object_ in anion_neighbors}.values())
-        if len(center) == 0:
+        sites = np.array(self.atoms.sites)
+        species = list({object_.species_string: object_ for object_ in self.atoms}.values())
+        center = sorted(species, key=lambda x: x.specie.oxi_state)[-1].specie
+        if center.oxi_state < 0:
             raise ValueError('No polyatomic anions could be found.')
-        centers = [ atom for atom in self.atoms if atom.species_string == center[0].species_string ]
+        centers = [ atom for atom in sites if atom.specie == center ]
         return centers
 
     @property
@@ -81,12 +83,13 @@ class BulkUnit():
         Returns:
             (list): PeriodicSite objects of all cations.
         """
-        all_cations = [ atom for atom in self.atoms
-                            if atom.element != center_str
-                            and atom.oxidation_state > 0 ]
-        if len(all_cations) == 0:
+        sites = np.array(self.atoms.sites)
+        species = list({object_.species_string: object_ for object_ in self.atoms}.values())
+        cation = sorted(species, key=lambda x: x.specie.oxi_state)[-2].specie
+        if cation.oxi_state < 0:
             raise ValueError('No cations could be found.')
-        return all_cations
+        cations = [ atom for atom in sites if atom.specie == cation ]
+        return cations
 
     @staticmethod
     def set_site_attributes(structure):
@@ -147,8 +150,7 @@ class BulkUnit():
             site.index = structure.index(site)
             site.cluster = cluster(site, structure)
             site.coordination_number = coordination_number(site, structure)
-            site.element = site.as_dict()['species'][0]['element']
-            site.oxidation_state = site.as_dict()['species'][0]['oxidation_state']
+            site.element = site.specie.element.symbol
         # for site in structure:
         #     max_coordination_number = max([atom.coordination_number for atom in structure if atom.element == site.element])
         #     site.undercoordinated = True if site.coordination_number < max_coordination_number else False
@@ -166,7 +168,6 @@ class SlabUnit(BulkUnit):
         A pymatgen Slab object can be obtained by calling the 'atoms'
         attribute. The original bulk structure is stored in the
         'bulk' attribute.
-
         Args:
             slab: pymatgen.core.surface.Slab object.
             bulk_obj: BulkUnit object.
@@ -180,11 +181,9 @@ class SlabUnit(BulkUnit):
         """
         Returns coordination numbers of a set of PeriodicSite objects
         in a list.
-
         Args:
             sites: list of PeriodicSite objects of which coordination numbers
             is to be obtained.
-
         Returns:
             (list): integers of coordination numbers.
         """
@@ -197,10 +196,8 @@ class SlabUnit(BulkUnit):
         of all the sites in the list; therefore, this function is to be used with
         all species of one type in the structure at the same time (by calling the
         'centers/anions/cations' functions in the BulkUnit and SlabUnit classes)
-
         Args:
             sites: list of PeriodicSite objects to investigate.
-
         Returns:
             (int): number of undercoordinated sites.
         """
@@ -219,7 +216,6 @@ class SlabUnit(BulkUnit):
         """
         Determines the thickness of the slab based on the maximum and minimum
         Z cartesian positions of all atoms.
-
         Returns:
             (float): thickness of the slab in angstroms.
         """
@@ -233,14 +229,13 @@ class SlabUnit(BulkUnit):
         Analyses the structure to find the anions which are not bound todo
         their center atom (e.g., in the case of silicates, O atoms which are
         not bound to Si).
-
         Returns:
             (list): PeriodicSite objects of lone anions.
         """
         anions_list = [
                         atom for atom in self.anions
                              if center_str not in
-                             [site.as_dict()['species'][0]['element'] for site in atom.cluster]
+                             [site.specie.element.symbol for site in atom.cluster]
                       ]
         return anions_list
 
@@ -252,7 +247,6 @@ class SlabUnit(BulkUnit):
         """
         Detects undercoordinated anionic centers and retrieves their nearest
         neighbors.
-
         Returns:
             (list): PeriodicSite objects of undercoordinated anionic centers,
             as well as their nearest anion neighbors.
@@ -267,7 +261,6 @@ class SlabUnit(BulkUnit):
         Wrapping of the remove_sites function of pymatgen, this function
         removes a set of sites inside the SlabUnit class, without generating
         a copy of the structure and maintaining site attributes.
-
         Args:
             sites: list of PeriodicSite objects of sites which are to be
             removed from the main SlabUnit object.
@@ -282,7 +275,6 @@ class SlabUnit(BulkUnit):
         """
         Similarly to the 'remove_sites' function, this function removes
         all sites of a certain element.
-
         Args:
             element: element to be removed, as string (e.g., 'Fe').
         """
@@ -293,7 +285,6 @@ class SlabUnit(BulkUnit):
     def top_site(self, element):
         """
         Finds the top site of a slab.
-
         Args:
             element: element of site to be investigated, as string (e.g., 'Fe').
         """
@@ -304,7 +295,6 @@ class SlabUnit(BulkUnit):
     def bottom_site(self, element):
         """
         Finds the bottom site of a slab.
-
         Args:
             element: element of site to be investigated, as string (e.g., 'Fe').
         """
@@ -321,7 +311,6 @@ class SlabUnit(BulkUnit):
         be achieved through this method, the structure is regenerated
         and the algorithm repeats from the bottom, changing
         'approach_value' to 'bot'.
-
         Returns:
             (str): side from which polyatomic anions have been removed,
             which determines the side from which cations should be
@@ -361,7 +350,6 @@ class SlabUnit(BulkUnit):
         polyatomic anions, cations are removed from one side, as
         determined by the 'topbot' parameter, until non-polarity is
         achieved (or until bulk stroichiometry is achieved in the slab).
-
         Args:
             topbot: side from which polyatomic anions have been removed.
         """
