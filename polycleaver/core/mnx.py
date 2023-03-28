@@ -1,7 +1,30 @@
 from pymatgen.core.surface import SlabGenerator, generate_all_slabs, get_symmetrically_distinct_miller_indices
+from pymatgen.core import Structure
 from pymatgen.analysis.structure_matcher import StructureMatcher
-import itertools
-import os, copy, sys
+import numpy as np
+import copy, sys
+
+def remove_equivalent_slabs(slablist):
+    """
+    Often, the sanitizing operations performed in the 'generate_slabs' function
+    converge to symmetrically equivalent slabs. This function analyses a
+    list containing SlabUnit objects and removes equivalent slabs.
+
+    Args:
+        slablist:   list of SlabUnit objects from which equivalent slabs
+                    are to be removed.
+    """
+    for index, slab in enumerate(slablist):
+        equivalences = [StructureMatcher().fit(slablist[index].atoms, slablist[_index].atoms)
+                        for _index in range(len(slablist))
+                            if _index != index]
+        if any(equivalences):
+            _equivalences = [_index for _index in range(len(equivalences))
+                                if equivalences[_index]
+                                and _index != index
+                                and slablist[index].atoms.miller_index == slablist[_index].atoms.miller_index]
+            for _index in sorted(_equivalences, reverse=True):
+                del slablist[_index]
 
 class BulkUnit():
     """
@@ -45,7 +68,7 @@ class BulkUnit():
             (list): PeriodicSite objects of all anions.
         """
         sites = np.array(self.atoms.sites)
-        mask = [site.specie.oxi_state < 0 for site in sites]
+        mask = np.vectorize(lambda site: site.specie.oxi_state < 0)(sites)
         anions = sites[mask]
         if len(anions) == 0:
             raise ValueError('No anions could be found.')
@@ -68,7 +91,8 @@ class BulkUnit():
         center = sorted(species, key=lambda x: x.specie.oxi_state)[-1].specie
         if center.oxi_state < 0:
             raise ValueError('No polyatomic anions could be found.')
-        centers = [ atom for atom in sites if atom.specie == center ]
+        mask = np.vectorize(lambda site: site.specie == center)(sites)
+        centers = sites[mask]
         return centers
 
     @property
@@ -88,7 +112,8 @@ class BulkUnit():
         cation = sorted(species, key=lambda x: x.specie.oxi_state)[-2].specie
         if cation.oxi_state < 0:
             raise ValueError('No cations could be found.')
-        cations = [ atom for atom in sites if atom.specie == cation ]
+        mask = np.vectorize(lambda site: site.specie == cation)(sites)
+        cations = sites[mask]
         return cations
 
     @staticmethod
@@ -138,9 +163,9 @@ class BulkUnit():
                 and its nearest neighbors.
             """
             cluster = []
-            cluster.extend([ atom for atom in structure.get_neighbors(site, 2.3) ])
+            cluster.extend(structure.get_neighbors(site, 2.3))
             cluster.append(site)
-            return cluster
+            return np.array(cluster, dtype=object)
 
         #####
         ## Attributes of all pymatgen.core.sites.PeriodicSite objects
@@ -151,9 +176,6 @@ class BulkUnit():
             site.cluster = cluster(site, structure)
             site.coordination_number = coordination_number(site, structure)
             site.element = site.specie.element.symbol
-        # for site in structure:
-        #     max_coordination_number = max([atom.coordination_number for atom in structure if atom.element == site.element])
-        #     site.undercoordinated = True if site.coordination_number < max_coordination_number else False
 
 class SlabUnit(BulkUnit):
     """
@@ -201,15 +223,10 @@ class SlabUnit(BulkUnit):
         Returns:
             (int): number of undercoordinated sites.
         """
-        coord_no_bulk = [ site.coordination_number for site in self.bulk.atoms if site.element == sites[0].element ][0]
-        # coord_no_bulk = len(self.bulk.atoms.get_neighbors(
-        #                    [site for site in self.bulk.atoms if site.element == sites[0].element][0], 2.3)
-        #                                                  )
-        undercoordinated_sites = []
-        for index, site in enumerate(sites):
-            if site.coordination_number < coord_no_bulk:
-                undercoordinated_sites.append(site)
-        return undercoordinated_sites
+        coord_mask = np.vectorize(lambda site: site.element == sites[0].element)(self.bulk.atoms)
+        coord_no_bulk = np.vectorize(lambda site: site.coordination_number)(self.bulk.atoms)[coord_mask][0]
+        undercoord_mask = np.vectorize(lambda site: site.coordination_number < coord_no_bulk)(sites)
+        return sites[undercoord_mask]
 
     @property
     def thickness(self):
@@ -231,13 +248,14 @@ class SlabUnit(BulkUnit):
         not bound to Si).
         Returns:
             (list): PeriodicSite objects of lone anions.
-        """
-        anions_list = [
-                        atom for atom in self.anions
-                             if center_str not in
-                             [site.specie.element.symbol for site in atom.cluster]
-                      ]
-        return anions_list
+        """        
+        def convert_to_strings(cluster):
+            return np.vectorize(lambda site: site.specie.element.symbol, otypes=[object])(cluster)
+        
+        cluster_atoms = np.vectorize(lambda site: site.cluster)(self.anions)
+        cluster_elements = np.vectorize(convert_to_strings)(cluster_atoms)
+        mask_lone_anions = np.vectorize(lambda cluster: center_str not in cluster)(cluster_elements)
+        return self.anions[mask_lone_anions]
 
     def there_are_cations(self):
         return any([cation in self.atoms.formula for cation in cations_strs])
@@ -251,10 +269,12 @@ class SlabUnit(BulkUnit):
             (list): PeriodicSite objects of undercoordinated anionic centers,
             as well as their nearest anion neighbors.
         """
-        atoms_to_remove = []
-        for atom in self.undercoordinated_sites(self.centers):
-            atoms_to_remove.extend(atom.cluster)
-        return [ atom for atom in atoms_to_remove ]
+        try:
+            atoms_to_remove = np.vectorize(lambda site: site.cluster)(self.undercoordinated_sites(self.centers))
+            atoms_to_remove = np.concatenate(atoms_to_remove).ravel()
+        except ValueError:
+            atoms_to_remove = np.array([], dtype=object)
+        return atoms_to_remove
 
     def remove_sites(self, sites):
         """
@@ -265,10 +285,21 @@ class SlabUnit(BulkUnit):
             sites: list of PeriodicSite objects of sites which are to be
             removed from the main SlabUnit object.
         """
+        # template = self.atoms.copy()
+        # template.remove_sites([template.index(atom) for atom in template
+        #                                             if any(atom.is_periodic_image(site) for site in sites)])
+        # for site in [atom for atom in self.atoms if atom not in template]:
+        #     self.atoms.remove(site)
+
         template = self.atoms.copy()
-        template.remove_sites([template.index(atom) for atom in template
-                                                    if any(atom.is_periodic_image(site) for site in sites)])
+        sites_to_remove = np.vectorize(lambda site:
+                                            np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0][0], 
+                                      otypes=[object])(np.array(sites))
+        template.remove_sites(list(sites_to_remove))
+        # mask_sites = np.invert(np.isin(np.array(self.atoms.sites), np.array(template.sites)))
+        # np.vectorize(lambda site: self.atoms.remove(site))(np.array(self.atoms.sites)[np.invert(mask_sites)])
         for site in [atom for atom in self.atoms if atom not in template]:
+        # for site in np.array(self.atoms.sites)[np.invert(mask_sites)]:
             self.atoms.remove(site)
 
     def remove_element(self, elements):
@@ -278,7 +309,8 @@ class SlabUnit(BulkUnit):
         Args:
             element: element to be removed, as string (e.g., 'Fe').
         """
-        atoms_list = [site for site in self.atoms if site.element in elements]
+        mask_elements = np.vectorize(lambda site: site.element in elements)(self.atoms)
+        atoms_list = np.array(self.atoms)[mask_elements]
         for atom in atoms_list:
             self.atoms.remove(atom)
 
@@ -288,7 +320,8 @@ class SlabUnit(BulkUnit):
         Args:
             element: element of site to be investigated, as string (e.g., 'Fe').
         """
-        atoms_list = [atom for atom in self.atoms if atom.element == element]
+        mask_elements = np.vectorize(lambda atom: atom.element == element)(self.atoms)
+        atoms_list = list(np.array(self.atoms)[mask_elements])
         atoms_list.sort(key=lambda x: x.z)
         return atoms_list[-1]
 
@@ -298,7 +331,8 @@ class SlabUnit(BulkUnit):
         Args:
             element: element of site to be investigated, as string (e.g., 'Fe').
         """
-        atoms_list = [atom for atom in self.atoms if atom.element == element]
+        mask_elements = np.vectorize(lambda atom: atom.element == element)(self.atoms)
+        atoms_list = list(np.array(self.atoms)[mask_elements])
         atoms_list.sort(key=lambda x: x.z)
         return atoms_list[0]
 
@@ -460,11 +494,10 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
         initial_slab = slab.get_orthogonal_c_slab()
 
         scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
-
-        while (scaffold.clusters_to_remove + scaffold.lone_anions != [] if center_str in scaffold.atoms.formula else False):
-            scaffold.remove_sites(scaffold.clusters_to_remove + scaffold.lone_anions)
-        if center_str not in scaffold.atoms.formula:
-            continue
+        while (len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)) != 0 if center_str in scaffold.atoms.formula else False):
+            scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
+            if center_str not in scaffold.atoms.formula:
+                continue
         scaffold.remove_element(cations_strs)
         topbot = scaffold.depolarize_anions()
         reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
@@ -476,7 +509,7 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
         reconstruction.set_site_attributes(reconstruction.atoms)
         if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
             reconstruction.there_are_cations() and
-            reconstruction.undercoordinated_sites(reconstruction.centers) == []):
+            reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
             final_slabs.append(reconstruction)
         sys.stdout.flush()
 
@@ -486,25 +519,3 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
     print(f'{len(final_slabs)} non-polar, stoichiometric slabs generated.')
 
     return final_slabs
-
-def remove_equivalent_slabs(slablist):
-    """
-    Often, the sanitizing operations performed in the 'generate_slabs' function
-    converge to symmetrically equivalent slabs. This function analyses a
-    list containing SlabUnit objects and removes equivalent slabs.
-
-    Args:
-        slablist:   list of SlabUnit objects from which equivalent slabs
-                    are to be removed.
-    """
-    for index, slab in enumerate(slablist):
-        equivalences = [StructureMatcher().fit(slablist[index].atoms, slablist[_index].atoms)
-                        for _index in range(len(slablist))
-                            if _index != index]
-        if any(equivalences):
-            _equivalences = [_index for _index in range(len(equivalences))
-                                if equivalences[_index]
-                                and _index != index
-                                and slablist[index].atoms.miller_index == slablist[_index].atoms.miller_index]
-            for _index in sorted(_equivalences, reverse=True):
-                del slablist[_index]
