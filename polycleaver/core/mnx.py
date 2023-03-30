@@ -1,4 +1,4 @@
-from pymatgen.core.surface import SlabGenerator, generate_all_slabs, get_symmetrically_distinct_miller_indices
+from pymatgen.core.surface import get_d, SlabGenerator, generate_all_slabs, get_symmetrically_distinct_miller_indices
 from pymatgen.core import Structure
 from pymatgen.analysis.structure_matcher import StructureMatcher
 import numpy as np
@@ -494,7 +494,7 @@ def generate_slabs(bulk, hkl, thickness=15, vacuum=15):
         initial_slab = slab.get_orthogonal_c_slab()
 
         scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
-        while (len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)) != 0 if center_str in scaffold.atoms.formula else False):
+        while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
             scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
             if center_str not in scaffold.atoms.formula:
                 continue
