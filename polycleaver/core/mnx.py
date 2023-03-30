@@ -117,18 +117,6 @@ class SlabUnit(BulkUnit):
         self.bulk = bulk_obj
         self.set_site_attributes(self.atoms) # Update attributes of periodic sites.
 
-    def coordination_numbers(self, sites):
-        """
-        Returns coordination numbers of a set of PeriodicSite objects
-        in a list.
-        Args:
-            sites: list of PeriodicSite objects of which coordination numbers
-            is to be obtained.
-        Returns:
-            (list): integers of coordination numbers.
-        """
-        return [ site.coordination_number for site in sites ]
-
     def undercoordinated_sites(self, sites):
         """
         Retrieves number of undercoordinated sites of a surface. The coordination
@@ -145,6 +133,67 @@ class SlabUnit(BulkUnit):
         coord_no_bulk = np.vectorize(lambda site: site.coordination_number)(self.bulk.atoms)[coord_mask][0]
         undercoord_mask = np.vectorize(lambda site: site.coordination_number < coord_no_bulk)(sites)
         return sites[undercoord_mask]
+    
+    @staticmethod
+    def set_site_attributes(structure):
+        """
+        Sets the attributes of the sites present inside a structure.
+
+        Args:
+            structure: site pymatgen structure (Slab, Structure...) of which
+                        sites are to be analysed.
+        """
+
+        def coordination_number(site, structure):
+            """
+            Determines the coordination number of any given periodic site
+            inside a structure.
+
+            Args:
+                site: pymatgen.core.sites.PeriodicSite site to analyse.
+                structure: pymatgen Structure / Slab containing the site.
+
+            Returns:
+                (int): coordination number of the selected site.
+            """
+            try:
+                distance_nn = min(
+                                    [structure.get_distance(site.index, atom.index)
+                                        for atom in structure.get_neighbors(site, 3.5)]
+                                    ) + 0.2
+                neighborlist = structure.get_neighbors(site, distance_nn)
+                coordination_number = len(neighborlist)
+            except ValueError:
+                coordination_number = 0
+            return coordination_number
+
+        def cluster(site, structure):
+            """
+            Performs clustering analyses of the surrounding species from a
+            single site center.
+
+            Args:
+                site: pymatgen.core.sites.PeriodicSite site to analyse.
+                structure: pymatgen Structure / Slab containing the site.
+
+            Returns:
+                (list): PeriodicSite objects including the center atom
+                and its nearest neighbors.
+            """
+            cluster = []
+            cluster.extend(structure.get_neighbors(site, 2.3))
+            cluster.append(site)
+            return np.array(cluster, dtype=object)
+
+        #####
+        ## Attributes of all pymatgen.core.sites.PeriodicSite objects
+        ## conforming the structure are update here.
+        ####
+        for site in structure:
+            site.index = structure.index(site)
+            site.cluster = cluster(site, structure)
+            site.coordination_number = coordination_number(site, structure)
+            site.element = site.specie.element.symbol
 
     @property
     def thickness(self):
