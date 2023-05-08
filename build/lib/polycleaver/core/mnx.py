@@ -1,7 +1,7 @@
 import numpy as np
-from . import tools
-import copy, sys
-from .miscellaneous import load_bar
+import .tools
+import copy
+from miscellaneous import load_bar
 
 class BulkUnit():
     """
@@ -189,12 +189,21 @@ class SlabUnit(BulkUnit):
             sites: list of PeriodicSite objects of sites which are to be
             removed from the main SlabUnit object.
         """
+        # template = self.atoms.copy()
+        # template.remove_sites([template.index(atom) for atom in template
+        #                                             if any(atom.is_periodic_image(site) for site in sites)])
+        # for site in [atom for atom in self.atoms if atom not in template]:
+        #     self.atoms.remove(site)
+
         template = self.atoms.copy()
         sites_to_remove = np.vectorize(lambda site:
                                             np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0][0], 
                                       otypes=[object])(np.array(sites))
         template.remove_sites(list(sites_to_remove))
+        # mask_sites = np.invert(np.isin(np.array(self.atoms.sites), np.array(template.sites)))
+        # np.vectorize(lambda site: self.atoms.remove(site))(np.array(self.atoms.sites)[np.invert(mask_sites)])
         for site in [atom for atom in self.atoms if atom not in template]:
+        # for site in np.array(self.atoms.sites)[np.invert(mask_sites)]:
             self.atoms.remove(site)
 
     def remove_element(self, elements):
@@ -355,7 +364,7 @@ def generate_mnx_slabs(bulk, hkl, thickness=15, vacuum=15):
 
     bulk.add_oxidation_state_by_guess()
     bulk_obj = BulkUnit(bulk)
-    initial_slabs = tools.get_initial_slabs(bulk, hkl, thickness, vacuum)
+    initial_slabs = tools.get_initial_slabs(bulk, hkl_list, thickness, vacuum)
 
     final_slabs = []
     for index, slab in enumerate(initial_slabs):
@@ -375,7 +384,7 @@ def generate_mnx_slabs(bulk, hkl, thickness=15, vacuum=15):
                                           and site.element not in cations_strs])
         reconstruction.depolarize_cations(topbot)
         reconstruction.stoichiometrize()
-        tools.set_site_attributes(reconstruction.atoms)
+        reconstruction.tools.set_site_attributes(reconstruction.atoms)
         if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
             reconstruction.there_are_cations() and
             reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):

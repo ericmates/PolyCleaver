@@ -1,5 +1,5 @@
 import numpy as np
-from . import tools
+import .tools
 import os
 
 def generate_mx_slabs(bulk, hkl, thickness=15, vacuum=15):
@@ -32,3 +32,6 @@ def generate_mx_slabs(bulk, hkl, thickness=15, vacuum=15):
     slabs = [slab for slab in initial_slabs if not slab.is_polar()]
     print(f'{len(slabs)} non-polar slabs generated.')
     return slabs
+
+tools.set_site_attributes(slabs[0])
+slabs[0]
