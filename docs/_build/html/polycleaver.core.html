@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>polycleaver.core package &mdash; PolyCleaver 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PolyCleaver
+              <img src="_static/icon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">polycleaver.core package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-polycleaver.core.miscellaneous">polycleaver.core.miscellaneous module</a><ul>
+<li><a class="reference internal" href="#polycleaver.core.miscellaneous.load_bar"><code class="docutils literal notranslate"><span class="pre">load_bar()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-polycleaver.core.mnx">polycleaver.core.mnx module</a><ul>
+<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit"><code class="docutils literal notranslate"><span class="pre">BulkUnit</span></code></a><ul>
+<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit.anions"><code class="docutils literal notranslate"><span class="pre">BulkUnit.anions</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit.cations"><code class="docutils literal notranslate"><span class="pre">BulkUnit.cations</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit.centers"><code class="docutils literal notranslate"><span class="pre">BulkUnit.centers</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit"><code class="docutils literal notranslate"><span class="pre">SlabUnit</span></code></a><ul>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.bottom_site"><code class="docutils literal notranslate"><span class="pre">SlabUnit.bottom_site()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.clusters_to_remove"><code class="docutils literal notranslate"><span class="pre">SlabUnit.clusters_to_remove</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.depolarize_anions"><code class="docutils literal notranslate"><span class="pre">SlabUnit.depolarize_anions()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.depolarize_cations"><code class="docutils literal notranslate"><span class="pre">SlabUnit.depolarize_cations()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.lone_anions"><code class="docutils literal notranslate"><span class="pre">SlabUnit.lone_anions</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.remove_element"><code class="docutils literal notranslate"><span class="pre">SlabUnit.remove_element()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.remove_sites"><code class="docutils literal notranslate"><span class="pre">SlabUnit.remove_sites()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.stoichiometrize"><code class="docutils literal notranslate"><span class="pre">SlabUnit.stoichiometrize()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.there_are_cations"><code class="docutils literal notranslate"><span class="pre">SlabUnit.there_are_cations()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.thickness"><code class="docutils literal notranslate"><span class="pre">SlabUnit.thickness</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.top_site"><code class="docutils literal notranslate"><span class="pre">SlabUnit.top_site()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.undercoordinated_sites"><code class="docutils literal notranslate"><span class="pre">SlabUnit.undercoordinated_sites()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#polycleaver.core.mnx.generate_mnx_slabs"><code class="docutils literal notranslate"><span class="pre">generate_mnx_slabs()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-polycleaver.core.mx">polycleaver.core.mx module</a><ul>
+<li><a class="reference internal" href="#polycleaver.core.mx.generate_mx_slabs"><code class="docutils literal notranslate"><span class="pre">generate_mx_slabs()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-polycleaver.core.tools">polycleaver.core.tools module</a><ul>
+<li><a class="reference internal" href="#polycleaver.core.tools.get_hkl_list"><code class="docutils literal notranslate"><span class="pre">get_hkl_list()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.tools.get_initial_slabs"><code class="docutils literal notranslate"><span class="pre">get_initial_slabs()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.tools.get_preliminary_slabs"><code class="docutils literal notranslate"><span class="pre">get_preliminary_slabs()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.tools.read_bulk"><code class="docutils literal notranslate"><span class="pre">read_bulk()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.tools.remove_equivalent_slabs"><code class="docutils literal notranslate"><span class="pre">remove_equivalent_slabs()</span></code></a></li>
+<li><a class="reference internal" href="#polycleaver.core.tools.set_site_attributes"><code class="docutils literal notranslate"><span class="pre">set_site_attributes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-polycleaver.core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PolyCleaver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">polycleaver.core package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/polycleaver.core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="polycleaver-core-package">
+<h1>polycleaver.core package<a class="headerlink" href="#polycleaver-core-package" title="Permalink to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-polycleaver.core.miscellaneous">
+<span id="polycleaver-core-miscellaneous-module"></span><h2>polycleaver.core.miscellaneous module<a class="headerlink" href="#module-polycleaver.core.miscellaneous" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.miscellaneous.load_bar">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.miscellaneous.</span></span><span class="sig-name descname"><span class="pre">load_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/miscellaneous.html#load_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.miscellaneous.load_bar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-polycleaver.core.mnx">
+<span id="polycleaver-core-mnx-module"></span><h2>polycleaver.core.mnx module<a class="headerlink" href="#module-polycleaver.core.mnx" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.BulkUnit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polycleaver.core.mnx.</span></span><span class="sig-name descname"><span class="pre">BulkUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bulk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#BulkUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.BulkUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class analyses the parameters of a monometallic
+ionic-covalent bulk structure (i.e., Mg2SiO4, CaCO3)
+based on geometrical and oxidation state data.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.BulkUnit.anions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">anions</span></span><a class="headerlink" href="#polycleaver.core.mnx.BulkUnit.anions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the anions in the structure, by detecting whether negative
+oxidation states are present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if no anions are found in the structure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PeriodicSite objects of all anions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.BulkUnit.cations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cations</span></span><a class="headerlink" href="#polycleaver.core.mnx.BulkUnit.cations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the metallic cation by determining species with positive
+oxidation states not matching centers’ species.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if no cations are found in the structure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PeriodicSite objects of all cations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.BulkUnit.centers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">centers</span></span><a class="headerlink" href="#polycleaver.core.mnx.BulkUnit.centers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the anion centers in the structure. These are detected by
+obtaining the nearest neighbours to the anion species.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if no polyatomic anions are found in the structure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>PeriodicSite objects of all covalent anionic unit centers.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polycleaver.core.mnx.</span></span><span class="sig-name descname"><span class="pre">SlabUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#polycleaver.core.mnx.BulkUnit" title="polycleaver.core.mnx.BulkUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkUnit</span></code></a></p>
+<p>Inherited BulkUnit class, adapted for the generated slabs.
+Adds additional parameters, as well as analysis functions
+to perform stoichiometry and polarity corrections.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.bottom_site">
+<span class="sig-name descname"><span class="pre">bottom_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.bottom_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.bottom_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the bottom site of a slab.
+:param element: element of site to be investigated, as string (e.g., ‘Fe’).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.clusters_to_remove">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clusters_to_remove</span></span><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.clusters_to_remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detects undercoordinated anionic centers and retrieves their nearest
+neighbors.
+:returns: PeriodicSite objects of undercoordinated anionic centers,</p>
+<blockquote>
+<div><p>as well as their nearest anion neighbors.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.depolarize_anions">
+<span class="sig-name descname"><span class="pre">depolarize_anions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.depolarize_anions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.depolarize_anions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes polyatomic anions from one side or the other
+from a structure without cations until non-polarity is achieved.
+In addition, returns approach value. By default, polyatomic
+anion clusters are removed from the top; if non-polarity cannot
+be achieved through this method, the structure is regenerated
+and the algorithm repeats from the bottom, changing
+‘approach_value’ to ‘bot’.
+:returns: side from which polyatomic anions have been removed,</p>
+<blockquote>
+<div><p>which determines the side from which cations should be
+removed in subsequent geometrical operations to
+achieve non-polarity of the whole structure.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.depolarize_cations">
+<span class="sig-name descname"><span class="pre">depolarize_cations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topbot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.depolarize_cations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.depolarize_cations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once non-polarity is achieved in the scaffold containing only
+polyatomic anions, cations are removed from one side, as
+determined by the ‘topbot’ parameter, until non-polarity is
+achieved (or until bulk stroichiometry is achieved in the slab).
+:param topbot: side from which polyatomic anions have been removed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.lone_anions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lone_anions</span></span><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.lone_anions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyses the structure to find the anions which are not bound todo
+their center atom (e.g., in the case of silicates, O atoms which are
+not bound to Si).
+:returns: PeriodicSite objects of lone anions.
+:rtype: (list)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.remove_element">
+<span class="sig-name descname"><span class="pre">remove_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.remove_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.remove_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similarly to the ‘remove_sites’ function, this function removes
+all sites of a certain element.
+:param element: element to be removed, as string (e.g., ‘Fe’).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.remove_sites">
+<span class="sig-name descname"><span class="pre">remove_sites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.remove_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.remove_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapping of the remove_sites function of pymatgen, this function
+removes a set of sites inside the SlabUnit class, without generating
+a copy of the structure and maintaining site attributes.
+:param sites: list of PeriodicSite objects of sites which are to be
+:param removed from the main SlabUnit object.:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.stoichiometrize">
+<span class="sig-name descname"><span class="pre">stoichiometrize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.stoichiometrize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.stoichiometrize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes cations from a non-polar slab until composition
+matches the bulk stoichiometry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.there_are_cations">
+<span class="sig-name descname"><span class="pre">there_are_cations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.there_are_cations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.there_are_cations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.thickness">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">thickness</span></span><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.thickness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the thickness of the slab based on the maximum and minimum
+Z cartesian positions of all atoms.
+:returns: thickness of the slab in angstroms.
+:rtype: (float)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.top_site">
+<span class="sig-name descname"><span class="pre">top_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.top_site"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.top_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the top site of a slab.
+:param element: element of site to be investigated, as string (e.g., ‘Fe’).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.SlabUnit.undercoordinated_sites">
+<span class="sig-name descname"><span class="pre">undercoordinated_sites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sites</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#SlabUnit.undercoordinated_sites"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.SlabUnit.undercoordinated_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves number of undercoordinated sites of a surface. The coordination
+number of the saturated site is defined as the maximum coordination number
+of all the sites in the list; therefore, this function is to be used with
+all species of one type in the structure at the same time (by calling the
+‘centers/anions/cations’ functions in the BulkUnit and SlabUnit classes)
+:param sites: list of PeriodicSite objects to investigate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>number of undercoordinated sites.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>(int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.mnx.generate_mnx_slabs">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.mnx.</span></span><span class="sig-name descname"><span class="pre">generate_mnx_slabs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bulk_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hkl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mnx.html#generate_mnx_slabs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mnx.generate_mnx_slabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates non-polar, stoichiometric slabs from a given
+bulk and set of miller indices. In addition, polyatomic
+anion clusters, which are bound covalently, are preserved.
+This is achieved by:</p>
+<ol class="arabic">
+<li><p>Generating a set of polar and non-polar surfaces using
+pymatgen’s SlabGenerator class.</p></li>
+<li><p>Attempts to Tasker-correct the slabs to achieve non-polarity,
+using pymatgen’s get_tasker2_slabs function. This often finds
+more non-polar slabs.</p></li>
+<li><p>Orthogonalises the slabs.</p></li>
+<li><p>Corrects the slab to achieve non-polarity and bulk stoichiometry:
+i.      Removes lone anions which have been stripped from their atomic</p>
+<blockquote>
+<div><p>center.</p>
+</div></blockquote>
+<ol class="lowerroman simple" start="2">
+<li><p>Since polarity is determined by the polyatomic anion distribution
+as it is the main non-divisible unit, a scaffold wherein all
+cations have been removed is generated.</p></li>
+<li><p>Non-polarity is achieved in the scaffold containing polyatomic
+anions.</p></li>
+<li><p>Non-polar scaffold is populated with the cations that
+were removed.</p></li>
+<li><p>Non-polarity is achieved in the structure by selectively
+removing cations from one or the other side.</p></li>
+<li><p>Fractional composition of the slab is made to match that
+of the bulk by removing equivalent cations from both sides
+of the slab, while attempting to keep non-polarity.</p></li>
+</ol>
+</li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bulk</strong> – pymatgen.core.structure.Structure object of the bulk
+of which slabs are to be generated.</p></li>
+<li><p><strong>hkl</strong> – list of Miller indices as tuples (e.g., [(0,0,1), (0,1,0)])
+of planes parallel to surfaces to generate. Alternatively,
+maximum integer of the Miller index to analyse (e.g., if hkl=1,
+all symmetrically distinct Miller indices up to (1,1,1) will be
+considered, as determined by pymatgen’s
+‘get_symmetrically_distinct_miller_indices’ function).</p></li>
+<li><p><strong>thickness</strong> – thickness of the preliminary slabs generated. Note that
+this thickness will certainly vary in the final, corrected
+slabs.</p></li>
+<li><p><strong>vacuum</strong> – vacuum of the preliminary slabs in the direction normal to
+the surface. Note that this thickness will certainly vary
+in the final, corrected slabs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>SlabUnit objects of corrected slabs with all required parameters</dt><dd><p>for characterisation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-polycleaver.core.mx">
+<span id="polycleaver-core-mx-module"></span><h2>polycleaver.core.mx module<a class="headerlink" href="#module-polycleaver.core.mx" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.mx.generate_mx_slabs">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.mx.</span></span><span class="sig-name descname"><span class="pre">generate_mx_slabs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bulk_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hkl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/mx.html#generate_mx_slabs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.mx.generate_mx_slabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates non-polar, stoichiometric slabs from a given ionic crystal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bulk</strong> – pymatgen.core.structure.Structure object of the bulk
+of which slabs are to be generated.</p></li>
+<li><p><strong>hkl</strong> – list of Miller indices as tuples (e.g., [(0,0,1), (0,1,0)])
+of planes parallel to surfaces to generate. Alternatively,
+maximum integer of the Miller index to analyse (e.g., if hkl=1,
+all symmetrically distinct Miller indices up to (1,1,1) will be
+considered, as determined by pymatgen’s
+‘get_symmetrically_distinct_miller_indices’ function).</p></li>
+<li><p><strong>thickness</strong> – thickness of the preliminary slabs generated. Note that
+this thickness will certainly vary in the final, corrected
+slabs.</p></li>
+<li><p><strong>vacuum</strong> – vacuum of the preliminary slabs in the direction normal to
+the surface. Note that this thickness will certainly vary
+in the final, corrected slabs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>SlabUnit objects of corrected slabs with all required parameters</dt><dd><p>for characterisation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-polycleaver.core.tools">
+<span id="polycleaver-core-tools-module"></span><h2>polycleaver.core.tools module<a class="headerlink" href="#module-polycleaver.core.tools" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.tools.get_hkl_list">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.tools.</span></span><span class="sig-name descname"><span class="pre">get_hkl_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hkl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/tools.html#get_hkl_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.tools.get_hkl_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates list of Miller indices based on hkl input. If hkl is integer n,
+generates list of non-equivalent hkl indices so that h, k, l &lt; n; if hkl
+is a list of tuples, returns the same list as the indices input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>hkl</strong> – integer or tuple list of miller indices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.tools.get_initial_slabs">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.tools.</span></span><span class="sig-name descname"><span class="pre">get_initial_slabs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bulk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hkl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/tools.html#get_initial_slabs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.tools.get_initial_slabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Desc.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.tools.get_preliminary_slabs">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.tools.</span></span><span class="sig-name descname"><span class="pre">get_preliminary_slabs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bulk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hkl_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_slab</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/tools.html#get_preliminary_slabs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.tools.get_preliminary_slabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates preliminary slabs and corrects them if possible.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.tools.read_bulk">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.tools.</span></span><span class="sig-name descname"><span class="pre">read_bulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bulk_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/tools.html#read_bulk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.tools.read_bulk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads bulk string, converts it to pymatgen.core.Structure object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bulk_str</strong> – string path of the bulk file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.tools.remove_equivalent_slabs">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.tools.</span></span><span class="sig-name descname"><span class="pre">remove_equivalent_slabs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slablist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/tools.html#remove_equivalent_slabs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.tools.remove_equivalent_slabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Often, the sanitizing operations performed in the ‘generate_slabs’ function
+converge to symmetrically equivalent slabs. This function analyses a
+list containing SlabUnit objects and removes equivalent slabs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slablist</strong> – list of SlabUnit objects from which equivalent slabs
+are to be removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="polycleaver.core.tools.set_site_attributes">
+<span class="sig-prename descclassname"><span class="pre">polycleaver.core.tools.</span></span><span class="sig-name descname"><span class="pre">set_site_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/polycleaver/core/tools.html#set_site_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#polycleaver.core.tools.set_site_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the attributes of the sites present inside a structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>structure</strong> – site pymatgen structure (Slab, Structure…) of which
+sites are to be analysed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-polycleaver.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-polycleaver.core" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Eric Mates-Torres.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

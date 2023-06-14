@@ -303,7 +303,7 @@ class SlabUnit(BulkUnit):
             self.remove_sites([atomlist[a]])
             a = a * -1 if a < 0 else a * -1 - 1
 
-def generate_mnx_slabs(bulk, hkl, thickness=15, vacuum=15):
+def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
     """
     Generates non-polar, stoichiometric slabs from a given
     bulk and set of miller indices. In addition, polyatomic
@@ -352,7 +352,7 @@ def generate_mnx_slabs(bulk, hkl, thickness=15, vacuum=15):
         (list): SlabUnit objects of corrected slabs with all required parameters
                 for characterisation.
     """
-
+    bulk = tools.read_bulk(bulk_str)
     bulk.add_oxidation_state_by_guess()
     bulk_obj = BulkUnit(bulk)
     initial_slabs = tools.get_initial_slabs(bulk, hkl, thickness, vacuum)
@@ -386,5 +386,10 @@ def generate_mnx_slabs(bulk, hkl, thickness=15, vacuum=15):
     tools.remove_equivalent_slabs(final_slabs)
 
     print(f'{len(final_slabs)} non-polar, stoichiometric slabs generated.')
+
+    if save:
+        for number, slab in enumerate(final_slabs):
+            miller = f'{slab.atoms.miller_index[0]}{slab.atoms.miller_index[1]}{slab.atoms.miller_index[2]}'
+            slab.atoms.to(f'{number}-{miller}', 'cif')
 
     return final_slabs

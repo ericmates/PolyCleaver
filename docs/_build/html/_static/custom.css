@@ -1,0 +1,49 @@
+.toggle .header {
+    display: block;
+    clear: both;
+    padding-top: -10px;
+    padding-bottom: 20px;
+}
+
+.toggle .header:after {
+    content: " ▼";
+}
+
+.toggle .header.open:after {
+    content: " ▲";
+}
+
+/* Custom colors */
+
+.wy-side-nav-search, .wy-nav-top { /* above navigation, behind logo */
+    background: #f1f2e4; 
+}
+
+.icon.icon-home { /* link above logo */
+    color: #7da275;
+}
+
+.version { /* version spec under logo */
+    color: #7da275 !important;
+}
+
+.highlight { /* code blocks */
+    background: #f6faf5;
+} 
+
+.admonition-title { /* notes, title */
+    background: #7da275 !important; 
+}
+
+.admonition { /* notes */
+    background: #eef9ec !important;
+}
+
+html.writer-html5 .rst-content dl[class]:not(.option-list):not(.field-list):not(.footnote):not(.glossary):not(.simple)>dt {
+    /* Class definitions */
+    border-top: solid 3px #0053b5
+    border-left: none;
+    background: #e3f4fa;
+    color: black;
+}
+

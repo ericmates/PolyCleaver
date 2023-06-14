@@ -2,7 +2,7 @@ import numpy as np
 from . import tools
 import os
 
-def generate_mx_slabs(bulk, hkl, thickness=15, vacuum=15):
+def generate_mx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
     """
     Generates non-polar, stoichiometric slabs from a given ionic crystal
 
@@ -26,9 +26,15 @@ def generate_mx_slabs(bulk, hkl, thickness=15, vacuum=15):
         (list): SlabUnit objects of corrected slabs with all required parameters
                 for characterisation.
     """
-
+    bulk = tools.read_bulk(bulk_str)
     bulk.add_oxidation_state_by_guess()
     initial_slabs = tools.get_initial_slabs(bulk, hkl, thickness, vacuum)
     slabs = [slab for slab in initial_slabs if not slab.is_polar()]
     print(f'{len(slabs)} non-polar slabs generated.')
+
+    if save:
+        for number, slab in enumerate(slabs):
+            miller = f'{slab.atoms.miller_index[0]}{slab.atoms.miller_index[1]}{slab.atoms.miller_index[2]}'
+            slab.atoms.to(f'{number}-{miller}', 'cif')
+
     return slabs
