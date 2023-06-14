@@ -1,5 +1,6 @@
 from pymatgen.analysis.structure_matcher import StructureMatcher
 from pymatgen.core.surface import SlabGenerator, get_symmetrically_distinct_miller_indices
+from pymatgen.core import Structure
 import numpy as np
 
 def remove_equivalent_slabs(slablist):
@@ -24,22 +25,31 @@ def remove_equivalent_slabs(slablist):
             for _index in sorted(_equivalences, reverse=True):
                 del slablist[_index]
 
-def get_initial_slabs(bulk, hkl, thickness, vacuum, tolerance=.01):
+def get_hkl_list(hkl):
     """
-    Desc.
+    Generates list of Miller indices based on hkl input. If hkl is integer n,
+    generates list of non-equivalent hkl indices so that h, k, l < n; if hkl
+    is a list of tuples, returns the same list as the indices input.
+
+    Args:
+        hkl:   integer or tuple list of miller indices.
     """
-    all_slabs = []
-    print('Generating preliminary slabs...')
     if isinstance(hkl, int):
         hkl_list = get_symmetrically_distinct_miller_indices(bulk, hkl)
     if isinstance(hkl, list):
         hkl_list = hkl
-    print(f'Miller indices that will be analysed: {", ".join([str(hkl) for hkl in hkl_list])}')
+    return hkl_list
+
+def get_preliminary_slabs(bulk, hkl_list, thickness, vacuum, tolerance, center_slab=True):
+    """
+    Generates preliminary slabs and corrects them if possible.
+    """
+    all_slabs, valid_slabs = [], []
+
     for hkl in hkl_list:
-        slabgen = SlabGenerator(bulk, hkl, thickness, vacuum, center_slab=True)
+        slabgen = SlabGenerator(bulk, hkl, thickness, vacuum, center_slab)
         all_slabs.extend(slabgen.get_slabs())
 
-    valid_slabs = []
     for slab in all_slabs:
         if not slab.is_polar(tol_dipole_per_unit_area=tolerance):
             valid_slabs.append(slab)
@@ -48,10 +58,34 @@ def get_initial_slabs(bulk, hkl, thickness, vacuum, tolerance=.01):
             slab_tk_l = slab.get_tasker2_slabs(tol=tolerance)
             for slab_tk in slab_tk_l:
                 valid_slabs.append(slab_tk)
+    
+    return valid_slabs
+
+def get_initial_slabs(bulk, hkl, thickness, vacuum, tolerance=.01):
+    """
+    Desc.
+    """
+    all_slabs = []
+    print('Generating preliminary slabs...')
+    hkl_list = get_hkl_list(hkl)
+    print(f'Miller indices that will be analysed: {", ".join([str(hkl) for hkl in hkl_list])}')
+
+    valid_slabs = get_preliminary_slabs(bulk, hkl_list, thickness, vacuum, tolerance, center_slab=True)
 
     print(f'{len(valid_slabs)} preliminary slabs generated.')
 
     return valid_slabs
+
+def read_bulk(bulk_str):
+    """
+    Reads bulk string, converts it to pymatgen.core.Structure object.
+
+    Args:
+        bulk_str: string path of the bulk file.
+    """
+    bulk = Structure.from_file(bulk_str)
+
+    return bulk
 
 def set_site_attributes(structure):
     """
