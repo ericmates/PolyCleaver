@@ -15,8 +15,7 @@ These include silicates, sulfides, carbonates, sulfates and phosphates, among ot
 
 .. card:: Access the web app
    :link: https://polycleaver.streamlit.app
-   :img-background: _static/particle_background.png
-   :class-card: sd-text-white
+   :class-card: sd-text-white sd-text-center sd-bg-info
 
 This algorithm is built around the pymatgen library, allowing for a high degree of
 customization and future enhancement for other ionic compounds.
