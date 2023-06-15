@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App &mdash; PolyCleaver 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/design-tabs.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PolyCleaver
+              <img src="_static/icon.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">App</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#in-construction">In construction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#visualization-of-slabs">Visualization of slabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calculation-of-slab-parameters">Calculation of slab parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ionic-slabs-with-monoatomic-anions">Ionic slabs with monoatomic anions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PolyCleaver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">App</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/app.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="app">
+<h1>App<a class="headerlink" href="#app" title="Permalink to this heading">¶</a></h1>
+<section id="in-construction">
+<h2>In construction<a class="headerlink" href="#in-construction" title="Permalink to this heading">¶</a></h2>
+<p>Given a bulk structure of an ionic compound with a polyatomic anionic subunit
+(e.g., Mg<sub>2</sub>SiO<sub>4</sub>), <strong class="program">PolyCleaver</strong> is able to generate
+all surfaces from a list of Miller indices as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polycleaver.core</span> <span class="kn">import</span> <span class="n">mnx</span>
+<span class="n">miller_indices_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">slabs</span> <span class="o">=</span> <span class="n">mnx</span><span class="o">.</span><span class="n">generate_mnx_slabs</span><span class="p">(</span><span class="s1">&#39;bulk_mg2sio4.cif&#39;</span><span class="p">,</span> <span class="n">miller_indices_list</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will generate all non-polar terminations of the selected bulk with the specified
+Miller indices. The approximate thickness and vacuum of the slab (by default, 15 Å each)
+can be specified as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">slabs</span> <span class="o">=</span> <span class="n">mnx</span><span class="o">.</span><span class="n">generate_mnx_slabs</span><span class="p">(</span><span class="s1">&#39;bulk_mg2sio4.cif&#39;</span><span class="p">,</span> <span class="n">miller_indices_list</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">vacuum</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will save all structures in cif files, with an integer index plus the Miller three
+indices of the generated plane (e.g., 1_001.cif).</p>
+<section id="visualization-of-slabs">
+<h3>Visualization of slabs<a class="headerlink" href="#visualization-of-slabs" title="Permalink to this heading">¶</a></h3>
+<p>The slabs can be visualized using ASE as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymatgen.io.ase</span> <span class="kn">import</span> <span class="n">AseAtomsAdaptor</span>
+<span class="kn">from</span> <span class="nn">ase.visualize</span> <span class="kn">import</span> <span class="n">view</span>
+
+<span class="n">view</span><span class="p">([</span><span class="n">AseAtomsAdaptor</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="k">for</span> <span class="n">slab</span> <span class="ow">in</span> <span class="n">slabs</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="calculation-of-slab-parameters">
+<h3>Calculation of slab parameters<a class="headerlink" href="#calculation-of-slab-parameters" title="Permalink to this heading">¶</a></h3>
+<p>After generation of surfaces, <strong class="program">PolyCleaver</strong> can be used to display relevant surface
+parameters (only working for ionic surfaces with polyatomic anions, generated with the
+<cite>generate_mnx_slabs</cite> module):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">slab</span> <span class="ow">in</span> <span class="n">slabs</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>    <span class="c1"># Prints the final thickness of the reconstructed slabs</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">cations</span><span class="p">)</span>      <span class="c1"># Prints list of all cationic atoms (e.g., Mg2+ in Mg2SiO4).</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">anions</span><span class="p">)</span>       <span class="c1"># Prints list of all anionic atoms (e.g., O2- in Mg2SiO4).</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">centers</span><span class="p">)</span>      <span class="c1"># Prints list of the center atoms of all polyatomic anions (e.g., Si4+ in Mg2SiO4).</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">undercoordinated_sites</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">cations</span><span class="p">))</span> <span class="c1"># Prints all undercoordinated cations at both sides of the slab.</span>
+</pre></div>
+</div>
+<p>This allows for rapid selection of most interesting slabs for reactivity or adsorption studies.</p>
+</section>
+</section>
+<section id="ionic-slabs-with-monoatomic-anions">
+<h2>Ionic slabs with monoatomic anions<a class="headerlink" href="#ionic-slabs-with-monoatomic-anions" title="Permalink to this heading">¶</a></h2>
+<p>Alternatively, this package can also generate bare slabs from ionic compounds with
+monoatomic ions such as FeS<sub>2</sub> in a similar fashion, using the <cite>polycleaver.core.mx</cite> module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polycleaver.core</span> <span class="kn">import</span> <span class="n">mx</span>
+<span class="n">miller_indices_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">slabs</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">generate_mx_slabs</span><span class="p">(</span><span class="s1">&#39;bulk_fes2.cif&#39;</span><span class="p">,</span> <span class="n">miller_indices_list</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Eric Mates-Torres.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

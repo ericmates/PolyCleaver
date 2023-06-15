@@ -7,6 +7,7 @@
   <title>polycleaver.core package &mdash; PolyCleaver 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.svg"/>
   <!--[if lt IE 9]>
@@ -16,6 +17,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/design-tabs.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -31,7 +33,7 @@
           
           <a href="index.html" class="icon icon-home">
             PolyCleaver
-              <img src="_static/icon.svg" class="logo" alt="Logo"/>
+              <img src="_static/icon.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -41,57 +43,13 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">polycleaver.core package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-polycleaver.core.miscellaneous">polycleaver.core.miscellaneous module</a><ul>
-<li><a class="reference internal" href="#polycleaver.core.miscellaneous.load_bar"><code class="docutils literal notranslate"><span class="pre">load_bar()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app.html">App</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#module-polycleaver.core.mnx">polycleaver.core.mnx module</a><ul>
-<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit"><code class="docutils literal notranslate"><span class="pre">BulkUnit</span></code></a><ul>
-<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit.anions"><code class="docutils literal notranslate"><span class="pre">BulkUnit.anions</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit.cations"><code class="docutils literal notranslate"><span class="pre">BulkUnit.cations</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.BulkUnit.centers"><code class="docutils literal notranslate"><span class="pre">BulkUnit.centers</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit"><code class="docutils literal notranslate"><span class="pre">SlabUnit</span></code></a><ul>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.bottom_site"><code class="docutils literal notranslate"><span class="pre">SlabUnit.bottom_site()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.clusters_to_remove"><code class="docutils literal notranslate"><span class="pre">SlabUnit.clusters_to_remove</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.depolarize_anions"><code class="docutils literal notranslate"><span class="pre">SlabUnit.depolarize_anions()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.depolarize_cations"><code class="docutils literal notranslate"><span class="pre">SlabUnit.depolarize_cations()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.lone_anions"><code class="docutils literal notranslate"><span class="pre">SlabUnit.lone_anions</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.remove_element"><code class="docutils literal notranslate"><span class="pre">SlabUnit.remove_element()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.remove_sites"><code class="docutils literal notranslate"><span class="pre">SlabUnit.remove_sites()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.stoichiometrize"><code class="docutils literal notranslate"><span class="pre">SlabUnit.stoichiometrize()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.there_are_cations"><code class="docutils literal notranslate"><span class="pre">SlabUnit.there_are_cations()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.thickness"><code class="docutils literal notranslate"><span class="pre">SlabUnit.thickness</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.top_site"><code class="docutils literal notranslate"><span class="pre">SlabUnit.top_site()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.SlabUnit.undercoordinated_sites"><code class="docutils literal notranslate"><span class="pre">SlabUnit.undercoordinated_sites()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#polycleaver.core.mnx.generate_mnx_slabs"><code class="docutils literal notranslate"><span class="pre">generate_mnx_slabs()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-polycleaver.core.mx">polycleaver.core.mx module</a><ul>
-<li><a class="reference internal" href="#polycleaver.core.mx.generate_mx_slabs"><code class="docutils literal notranslate"><span class="pre">generate_mx_slabs()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-polycleaver.core.tools">polycleaver.core.tools module</a><ul>
-<li><a class="reference internal" href="#polycleaver.core.tools.get_hkl_list"><code class="docutils literal notranslate"><span class="pre">get_hkl_list()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.tools.get_initial_slabs"><code class="docutils literal notranslate"><span class="pre">get_initial_slabs()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.tools.get_preliminary_slabs"><code class="docutils literal notranslate"><span class="pre">get_preliminary_slabs()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.tools.read_bulk"><code class="docutils literal notranslate"><span class="pre">read_bulk()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.tools.remove_equivalent_slabs"><code class="docutils literal notranslate"><span class="pre">remove_equivalent_slabs()</span></code></a></li>
-<li><a class="reference internal" href="#polycleaver.core.tools.set_site_attributes"><code class="docutils literal notranslate"><span class="pre">set_site_attributes()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-polycleaver.core">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>

@@ -7,6 +7,7 @@
   <title>PolyCleaver · an ionic surface generation package &mdash; PolyCleaver 0.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.svg"/>
   <!--[if lt IE 9]>
@@ -16,9 +17,11 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/design-tabs.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -31,7 +34,7 @@
           
           <a href="#" class="icon icon-home">
             PolyCleaver
-              <img src="_static/icon.svg" class="logo" alt="Logo"/>
+              <img src="_static/icon.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -41,12 +44,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">PolyCleaver · an ionic surface generation package</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -79,11 +82,15 @@
 high quality vacuum-containing surfaces from bulk structures of mineral structures
 characterised as ionic compounds with polyatomic anions (e.g., Mg<sub>2</sub>SiO<sub>4</sub>).
 These include silicates, sulfides, carbonates, sulfates and phosphates, among others.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polycleaver.core</span> <span class="kn">import</span> <span class="n">mnx</span>
-<span class="n">slabs</span> <span class="o">=</span> <span class="n">mnx</span><span class="o">.</span><span class="n">generate_mnx_slabs</span><span class="p">(</span><span class="s1">&#39;bulk_mg2sio4.cif&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm sd-card-hover sd-text-white docutils">
+<img alt="" class="sd-card-img" src="_images/particle_background.png" />
+<div class="sd-card-img-overlay docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Access the web app</div>
 </div>
-<p>This will save the slabs as cif files.</p>
+<a class="sd-stretched-link reference external" href="https://polycleaver.streamlit.app"></a></div>
+</div>
 <p>This algorithm is built around the pymatgen library, allowing for a high degree of
 customization and future enhancement for other ionic compounds.
 Surfaces generated using the PolyCleaver algorithm are:</p>
@@ -100,27 +107,27 @@ using a series of symmetry and geometry operations to generate the final structu
 Geometrical parameters of the slabs (e.g. thickness, number of undercoordinated cations
 on the topmost layers) are easily accessible, facilitating an unsupervised high-throughput
 generation of surface slabs with any given set of Miller indices.</p>
-<p>The slabs can be visualized using ASE as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymatgen.io.ase</span> <span class="kn">import</span> <span class="n">AseAtomsAdaptor</span>
-<span class="kn">from</span> <span class="nn">ase.visualize</span> <span class="kn">import</span> <span class="n">view</span>
-
-<span class="n">view</span><span class="p">([</span><span class="n">AseAtomsAdaptor</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(</span><span class="n">slab</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="k">for</span> <span class="n">slab</span> <span class="ow">in</span> <span class="n">slabs</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>Alternatively, this package can also generate bare slabs from ionic compounds with
-monoatomic ions such as FeS in a similar fashion, using the polycleaver.core.mx module:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polycleaver.core</span> <span class="kn">import</span> <span class="n">mx</span>
-<span class="n">slabs</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">generate_mx_slabs</span><span class="p">(</span><span class="s1">&#39;bulk_fes2.cif&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)],</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-via-pip">Installing via <cite>pip</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#cloning-the-repository">Cloning the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#ionic-slabs-with-polyatomic-anions">Ionic slabs with polyatomic anions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#ionic-slabs-with-monoatomic-anions">Ionic slabs with monoatomic anions</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </section>
@@ -128,7 +135,9 @@ monoatomic ions such as FeS in a similar fashion, using the polycleaver.core.mx 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
