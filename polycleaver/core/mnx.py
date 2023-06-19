@@ -392,6 +392,6 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
     if save:
         for number, slab in enumerate(final_slabs):
             miller = f'{slab.atoms.miller_index[0]}{slab.atoms.miller_index[1]}{slab.atoms.miller_index[2]}'
-            slab.atoms.to(f'{number}-{miller}', 'cif')
+            slab.atoms.to(f'{number}-{miller}.cif')
 
     return final_slabs
