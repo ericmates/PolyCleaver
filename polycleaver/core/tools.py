@@ -25,7 +25,7 @@ def remove_equivalent_slabs(slablist):
             for _index in sorted(_equivalences, reverse=True):
                 del slablist[_index]
 
-def get_hkl_list(hkl):
+def get_hkl_list(hkl, bulk):
     """
     Generates list of Miller indices based on hkl input. If hkl is integer n,
     generates list of non-equivalent hkl indices so that h, k, l < n; if hkl
@@ -67,7 +67,7 @@ def get_initial_slabs(bulk, hkl, thickness, vacuum, tolerance=.01):
     """
     all_slabs = []
     print('Generating preliminary slabs...')
-    hkl_list = get_hkl_list(hkl)
+    hkl_list = get_hkl_list(hkl, bulk)
     print(f'Miller indices that will be analysed: {", ".join([str(hkl) for hkl in hkl_list])}')
 
     valid_slabs = get_preliminary_slabs(bulk, hkl_list, thickness, vacuum, tolerance, center_slab=True)

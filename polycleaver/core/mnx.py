@@ -191,14 +191,15 @@ class SlabUnit(BulkUnit):
             sites: list of PeriodicSite objects of sites which are to be
             removed from the main SlabUnit object.
         """
-        template = self.atoms.copy()
-        sites_to_remove = np.vectorize(lambda site:
-                                            np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0], 
-                                      otypes=[object])(np.array(sites))
-        sites_to_remove = np.squeeze(np.concatenate([a for a in sites_to_remove.flatten() if len(a) > 0])) if len(sites_to_remove) > 1 else sites_to_remove[0]
-        template.remove_sites(list(sites_to_remove))
-        for site in [atom for atom in self.atoms if atom not in template]:
-            self.atoms.remove(site)
+        if len(sites) > 0:
+            template = self.atoms.copy()
+            sites_to_remove = np.vectorize(lambda site:
+                                                np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0], 
+                                        otypes=[object])(np.array(sites, dtype=object))
+            sites_to_remove = np.squeeze(np.concatenate([a for a in sites_to_remove.flatten() if len(a) > 0])) if len(sites_to_remove) > 1 else sites_to_remove[0]
+            template.remove_sites(list(sites_to_remove))
+            for site in [atom for atom in self.atoms if atom not in template]:
+                self.atoms.remove(site)
 
     def remove_element(self, elements):
         """
