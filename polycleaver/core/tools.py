@@ -84,7 +84,6 @@ def read_bulk(bulk_str):
         bulk_str: string path of the bulk file.
     """
     bulk = Structure.from_file(bulk_str)
-
     return bulk
 
 def set_site_attributes(structure):

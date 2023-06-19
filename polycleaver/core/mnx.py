@@ -1,3 +1,5 @@
+from ase.visualize import view
+from pymatgen.io.ase import AseAtomsAdaptor as ac
 import numpy as np
 from . import tools
 import copy, sys
@@ -191,8 +193,9 @@ class SlabUnit(BulkUnit):
         """
         template = self.atoms.copy()
         sites_to_remove = np.vectorize(lambda site:
-                                            np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0][0], 
+                                            np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0], 
                                       otypes=[object])(np.array(sites))
+        sites_to_remove = np.squeeze(np.concatenate([a for a in sites_to_remove.flatten() if len(a) > 0])) if len(sites_to_remove) > 1 else sites_to_remove[0]
         template.remove_sites(list(sites_to_remove))
         for site in [atom for atom in self.atoms if atom not in template]:
             self.atoms.remove(site)
@@ -270,7 +273,7 @@ class SlabUnit(BulkUnit):
                 _sites_to_remove = template.bottom_site(center_str).cluster
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
-        self.remove_sites(sites_to_remove) if template.atoms.formula != '' else None
+        self.remove_sites(sites_to_remove) if (template.atoms.formula != '' and len(sites_to_remove) > 0) else None
         return approach_value
 
     def depolarize_cations(self, topbot=None):
@@ -361,7 +364,6 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
     for index, slab in enumerate(initial_slabs):
         load_bar(index, len(initial_slabs))
         initial_slab = slab.get_orthogonal_c_slab()
-
         scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
         while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
             scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
