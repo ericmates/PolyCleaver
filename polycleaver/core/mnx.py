@@ -88,10 +88,13 @@ class BulkUnit():
         """
         sites = np.array(self.atoms.sites)
         species = list({object_.species_string: object_ for object_ in self.atoms}.values())
-        cation = sorted(species, key=lambda x: x.specie.oxi_state)[-2].specie
-        if cation.oxi_state < 0:
+        cation_species = []
+        for specie in species:
+            if specie not in self.bulk.centers and specie not in self.bulk.anions:
+                cation_species.append(specie.specie)
+        if len(cation_species) == 0:
             raise ValueError('No cations could be found.')
-        mask = np.vectorize(lambda site: site.specie == cation)(sites)
+        mask = np.vectorize(lambda site: site.specie in cation_species)(sites)
         cations = sites[mask]
         return cations
 
@@ -164,7 +167,7 @@ class SlabUnit(BulkUnit):
         return self.anions[mask_lone_anions]
 
     def there_are_cations(self):
-        return any([cation in self.atoms.formula for cation in cations_strs])
+        return all([cation in self.atoms.formula for cation in cations_strs])
 
     @property
     def clusters_to_remove(self):
@@ -196,7 +199,13 @@ class SlabUnit(BulkUnit):
             sites_to_remove = np.vectorize(lambda site:
                                                 np.where(np.vectorize(lambda atom: atom.is_periodic_image(site), otypes=[object])(template))[0], 
                                         otypes=[object])(np.array(sites, dtype=object))
-            sites_to_remove = np.squeeze(np.concatenate([a for a in sites_to_remove.flatten() if len(a) > 0])) if len(sites_to_remove) > 1 else sites_to_remove[0]
+            sites_to_remove = np.squeeze(
+                                  np.concatenate(
+                                    [a for a in sites_to_remove.flatten() if len(a) > 0]
+                                                )
+                                        ) if len(sites_to_remove) > 1 else sites_to_remove[0]
+            if sites_to_remove.ndim == 0:
+                sites_to_remove = np.resize(sites_to_remove, (1, 1))
             template.remove_sites(list(sites_to_remove))
             for site in [atom for atom in self.atoms if atom not in template]:
                 self.atoms.remove(site)
@@ -253,6 +262,7 @@ class SlabUnit(BulkUnit):
         template = copy.deepcopy(self)
         sites_to_remove = []
         approach_value = 'top'
+        print(center_str)
         while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
                center_str in template.atoms.formula or
                len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
@@ -262,6 +272,7 @@ class SlabUnit(BulkUnit):
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
         if not center_str in template.atoms.formula:
+            print(template.atoms.formula)
             template = copy.deepcopy(self)
             sites_to_remove = []
             approach_value = 'bot'
@@ -363,27 +374,28 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
 
     final_slabs = []
     for index, slab in enumerate(initial_slabs):
-        load_bar(index, len(initial_slabs))
-        initial_slab = slab.get_orthogonal_c_slab()
-        scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
-        while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
-            scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
-            if center_str not in scaffold.atoms.formula:
-                continue
-        scaffold.remove_element(cations_strs)
-        topbot = scaffold.depolarize_anions()
-        reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
-        reconstruction.remove_sites([site for site in reconstruction.atoms
-                                          if site not in scaffold.atoms
-                                          and site.element not in cations_strs])
-        reconstruction.depolarize_cations(topbot)
-        reconstruction.stoichiometrize()
-        tools.set_site_attributes(reconstruction.atoms)
-        if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
-            reconstruction.there_are_cations() and
-            reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
-            final_slabs.append(reconstruction)
-        sys.stdout.flush()
+        if index > 16:
+            load_bar(index, len(initial_slabs))
+            initial_slab = slab.get_orthogonal_c_slab()
+            scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
+            while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
+                scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
+                if center_str not in scaffold.atoms.formula:
+                    continue
+            scaffold.remove_element(cations_strs)
+            topbot = scaffold.depolarize_anions()
+            reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
+            reconstruction.remove_sites([site for site in reconstruction.atoms
+                                            if site not in scaffold.atoms
+                                            and site.element not in cations_strs])
+            reconstruction.depolarize_cations(topbot)
+            reconstruction.stoichiometrize()
+            tools.set_site_attributes(reconstruction.atoms)
+            if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+                reconstruction.there_are_cations() and
+                reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
+                final_slabs.append(reconstruction)
+            sys.stdout.flush()
 
     print('\nRemoving equivalent slabs...')
     tools.remove_equivalent_slabs(final_slabs)
