@@ -262,7 +262,6 @@ class SlabUnit(BulkUnit):
         template = copy.deepcopy(self)
         sites_to_remove = []
         approach_value = 'top'
-        print(center_str)
         while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
                center_str in template.atoms.formula or
                len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
@@ -272,7 +271,6 @@ class SlabUnit(BulkUnit):
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
         if not center_str in template.atoms.formula:
-            print(template.atoms.formula)
             template = copy.deepcopy(self)
             sites_to_remove = []
             approach_value = 'bot'
