@@ -1,4 +1,3 @@
-from ase.visualize import view
 from pymatgen.io.ase import AseAtomsAdaptor as ac
 import numpy as np
 from . import tools
