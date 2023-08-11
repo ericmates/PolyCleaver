@@ -372,28 +372,27 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
 
     final_slabs = []
     for index, slab in enumerate(initial_slabs):
-        if index > 16:
-            load_bar(index, len(initial_slabs))
-            initial_slab = slab.get_orthogonal_c_slab()
-            scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
-            while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
-                scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
-                if center_str not in scaffold.atoms.formula:
-                    continue
-            scaffold.remove_element(cations_strs)
-            topbot = scaffold.depolarize_anions()
-            reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
-            reconstruction.remove_sites([site for site in reconstruction.atoms
-                                            if site not in scaffold.atoms
-                                            and site.element not in cations_strs])
-            reconstruction.depolarize_cations(topbot)
-            reconstruction.stoichiometrize()
-            tools.set_site_attributes(reconstruction.atoms)
-            if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
-                reconstruction.there_are_cations() and
-                reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
-                final_slabs.append(reconstruction)
-            sys.stdout.flush()
+        load_bar(index, len(initial_slabs))
+        initial_slab = slab.get_orthogonal_c_slab()
+        scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
+        while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
+            scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
+            if center_str not in scaffold.atoms.formula:
+                continue
+        scaffold.remove_element(cations_strs)
+        topbot = scaffold.depolarize_anions()
+        reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
+        reconstruction.remove_sites([site for site in reconstruction.atoms
+                                        if site not in scaffold.atoms
+                                        and site.element not in cations_strs])
+        reconstruction.depolarize_cations(topbot)
+        reconstruction.stoichiometrize()
+        tools.set_site_attributes(reconstruction.atoms)
+        if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+            reconstruction.there_are_cations() and
+            reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
+            final_slabs.append(reconstruction)
+        sys.stdout.flush()
 
     print('\nRemoving equivalent slabs...')
     tools.remove_equivalent_slabs(final_slabs)

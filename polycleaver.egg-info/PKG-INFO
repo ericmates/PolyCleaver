@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: polycleaver
-Version: 0.0.2
+Version: 0.0.3
 Summary: Package for the generation of non-polar and stoichiometric surfaces from ionic structures.
 Author: Eric Mates-Torres
 Author-email: <eric.mates@uab.cat>
