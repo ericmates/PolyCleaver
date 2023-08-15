@@ -261,7 +261,7 @@ class SlabUnit(BulkUnit):
         template = copy.deepcopy(self)
         sites_to_remove = []
         approach_value = 'top'
-        while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+        while (template.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                center_str in template.atoms.formula or
                len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
                                                                        and anion_str in template.atoms.formula)
@@ -274,7 +274,7 @@ class SlabUnit(BulkUnit):
             sites_to_remove = []
             approach_value = 'bot'
             sites_to_remove = []
-            while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+            while (template.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                    center_str in template.atoms.formula or
                    len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
                                                                            and anion_str in template.atoms.formula)
@@ -297,7 +297,7 @@ class SlabUnit(BulkUnit):
         atomlist = sorted(self.cations, key=lambda x: x.z)
         a = 0
         ratio_bulk = len(self.bulk.cations)/len(self.bulk.centers)
-        while (self.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+        while (self.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                len(self.cations)/len(self.centers) > ratio_bulk):
             a += -1 if topbot == 'top' else 0
             self.remove_sites([atomlist[a]])
@@ -315,7 +315,7 @@ class SlabUnit(BulkUnit):
             self.remove_sites([atomlist[a]])
             a = a * -1 if a < 0 else a * -1 - 1
 
-def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
+def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True, tolerance=0.01):
     """
     Generates non-polar, stoichiometric slabs from a given
     bulk and set of miller indices. In addition, polyatomic
@@ -387,7 +387,7 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
         reconstruction.depolarize_cations(topbot)
         reconstruction.stoichiometrize()
         tools.set_site_attributes(reconstruction.atoms)
-        if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+        if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
             reconstruction.there_are_cations() and
             reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
             final_slabs.append(reconstruction)
