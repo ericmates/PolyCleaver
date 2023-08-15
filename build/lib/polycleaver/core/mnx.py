@@ -87,17 +87,20 @@ class BulkUnit():
             (list): PeriodicSite objects of all cations.
         """
         sites = np.array(self.atoms.sites)
+        # sites = np.array(reconstruction.atoms.sites)
         species = list({object_.species_string: object_ for object_ in self.atoms}.values())
         cation_species = []
-        for specie in species:
-            if specie not in self.bulk.centers and specie not in self.bulk.anions:
-                cation_species.append(specie.specie)
+        center_species = np.vectorize(lambda x: x.specie)(self.bulk.centers)
+        anion_species = np.vectorize(lambda x: x.specie)(self.bulk.anions)
+        for specie in np.vectorize(lambda x: x.specie)(species):
+            if specie not in center_species and specie not in anion_species:
+                cation_species.append(specie)
         if len(cation_species) == 0:
             raise ValueError('No cations could be found.')
         mask = np.vectorize(lambda site: site.specie in cation_species)(sites)
         cations = sites[mask]
         return cations
-
+    
 class SlabUnit(BulkUnit):
     """
     Inherited BulkUnit class, adapted for the generated slabs.
@@ -244,7 +247,7 @@ class SlabUnit(BulkUnit):
         atoms_list.sort(key=lambda x: x.z)
         return atoms_list[0]
 
-    def depolarize_anions(self):
+    def depolarize_anions(self, tolerance):
         """
         Removes polyatomic anions from one side or the other
         from a structure without cations until non-polarity is achieved.
@@ -262,7 +265,7 @@ class SlabUnit(BulkUnit):
         template = copy.deepcopy(self)
         sites_to_remove = []
         approach_value = 'top'
-        while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+        while (template.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                center_str in template.atoms.formula or
                len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
                                                                        and anion_str in template.atoms.formula)
@@ -275,7 +278,7 @@ class SlabUnit(BulkUnit):
             sites_to_remove = []
             approach_value = 'bot'
             sites_to_remove = []
-            while (template.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+            while (template.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                    center_str in template.atoms.formula or
                    len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
                                                                            and anion_str in template.atoms.formula)
@@ -286,7 +289,7 @@ class SlabUnit(BulkUnit):
         self.remove_sites(sites_to_remove) if (template.atoms.formula != '' and len(sites_to_remove) > 0) else None
         return approach_value
 
-    def depolarize_cations(self, topbot=None):
+    def depolarize_cations(self, tolerance, topbot=None):
         """
         Once non-polarity is achieved in the scaffold containing only
         polyatomic anions, cations are removed from one side, as
@@ -298,7 +301,7 @@ class SlabUnit(BulkUnit):
         atomlist = sorted(self.cations, key=lambda x: x.z)
         a = 0
         ratio_bulk = len(self.bulk.cations)/len(self.bulk.centers)
-        while (self.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+        while (self.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                len(self.cations)/len(self.centers) > ratio_bulk):
             a += -1 if topbot == 'top' else 0
             self.remove_sites([atomlist[a]])
@@ -316,7 +319,7 @@ class SlabUnit(BulkUnit):
             self.remove_sites([atomlist[a]])
             a = a * -1 if a < 0 else a * -1 - 1
 
-def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
+def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True, tolerance=0.01):
     """
     Generates non-polar, stoichiometric slabs from a given
     bulk and set of miller indices. In addition, polyatomic
@@ -380,15 +383,15 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
             if center_str not in scaffold.atoms.formula:
                 continue
         scaffold.remove_element(cations_strs)
-        topbot = scaffold.depolarize_anions()
+        topbot = scaffold.depolarize_anions(tolerance)
         reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
         reconstruction.remove_sites([site for site in reconstruction.atoms
                                         if site not in scaffold.atoms
                                         and site.element not in cations_strs])
-        reconstruction.depolarize_cations(topbot)
+        reconstruction.depolarize_cations(tolerance, topbot)
         reconstruction.stoichiometrize()
         tools.set_site_attributes(reconstruction.atoms)
-        if (not reconstruction.atoms.is_polar(tol_dipole_per_unit_area=0.01) and
+        if (not reconstruction.atoms.is_polar() and
             reconstruction.there_are_cations() and
             reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
             final_slabs.append(reconstruction)
