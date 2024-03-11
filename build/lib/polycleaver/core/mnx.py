@@ -87,7 +87,6 @@ class BulkUnit():
             (list): PeriodicSite objects of all cations.
         """
         sites = np.array(self.atoms.sites)
-        # sites = np.array(reconstruction.atoms.sites)
         species = list({object_.species_string: object_ for object_ in self.atoms}.values())
         cation_species = []
         center_species = np.vectorize(lambda x: x.specie)(self.bulk.centers)
