@@ -1,6 +1,5 @@
 import numpy as np
 from . import tools
-import os
 
 def generate_mx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
     """
@@ -34,7 +33,7 @@ def generate_mx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True):
 
     if save:
         for number, slab in enumerate(slabs):
-            miller = f'{slab.atoms.miller_index[0]}{slab.atoms.miller_index[1]}{slab.atoms.miller_index[2]}'
-            slab.atoms.to(f'{number}-{miller}', 'cif')
+            miller = f'{slab.miller_index[0]}{slab.miller_index[1]}{slab.miller_index[2]}'
+            slab.to(f'{number}-{miller}', 'cif')
 
     return slabs
