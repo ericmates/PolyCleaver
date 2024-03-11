@@ -263,7 +263,6 @@ class SlabUnit(BulkUnit):
         """
         template = copy.deepcopy(self)
         sites_to_remove = []
-        approach_value = 'top'
         while (template.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                center_str in template.atoms.formula or
                len(template.centers)%2 != len(template.bulk.centers)%2 if (center_str in template.atoms.formula
@@ -275,7 +274,6 @@ class SlabUnit(BulkUnit):
         if not center_str in template.atoms.formula:
             template = copy.deepcopy(self)
             sites_to_remove = []
-            approach_value = 'bot'
             sites_to_remove = []
             while (template.atoms.is_polar(tol_dipole_per_unit_area=tolerance) and
                    center_str in template.atoms.formula or
@@ -286,7 +284,6 @@ class SlabUnit(BulkUnit):
                 template.remove_sites(_sites_to_remove)
                 sites_to_remove.extend(_sites_to_remove)
         self.remove_sites(sites_to_remove) if (template.atoms.formula != '' and len(sites_to_remove) > 0) else None
-        return approach_value
 
     def depolarize_cations(self, tolerance, topbot=None):
         """
@@ -374,27 +371,28 @@ def generate_mnx_slabs(bulk_str, hkl, thickness=15, vacuum=15, save=True, tolera
 
     final_slabs = []
     for index, slab in enumerate(initial_slabs):
-        load_bar(index, len(initial_slabs))
-        initial_slab = slab.get_orthogonal_c_slab()
-        scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
-        while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
-            scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
-            if center_str not in scaffold.atoms.formula:
-                continue
-        scaffold.remove_element(cations_strs)
-        topbot = scaffold.depolarize_anions(tolerance)
-        reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
-        reconstruction.remove_sites([site for site in reconstruction.atoms
-                                        if site not in scaffold.atoms
-                                        and site.element not in cations_strs])
-        reconstruction.depolarize_cations(tolerance, topbot)
-        reconstruction.stoichiometrize()
-        tools.set_site_attributes(reconstruction.atoms)
-        if (not reconstruction.atoms.is_polar() and
-            reconstruction.there_are_cations() and
-            reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
-            final_slabs.append(reconstruction)
-        sys.stdout.flush()
+        for approach in ['top', 'bot']:
+            load_bar(index, len(initial_slabs))
+            initial_slab = slab.get_orthogonal_c_slab()
+            scaffold = SlabUnit(initial_slab.copy(), bulk_obj)
+            while len(np.append(scaffold.clusters_to_remove, scaffold.lone_anions)):
+                scaffold.remove_sites(np.append(scaffold.clusters_to_remove, np.array(scaffold.lone_anions, dtype=object)))
+                if center_str not in scaffold.atoms.formula:
+                    continue
+            scaffold.remove_element(cations_strs)
+            scaffold.depolarize_anions(tolerance)
+            reconstruction = SlabUnit(initial_slab.copy(), bulk_obj)
+            reconstruction.remove_sites([site for site in reconstruction.atoms
+                                            if site not in scaffold.atoms
+                                            and site.element not in cations_strs])
+            reconstruction.depolarize_cations(tolerance, approach)
+            reconstruction.stoichiometrize()
+            tools.set_site_attributes(reconstruction.atoms)
+            if (not reconstruction.atoms.is_polar() and
+                reconstruction.there_are_cations() and
+                reconstruction.undercoordinated_sites(reconstruction.centers).size == 0):
+                final_slabs.append(reconstruction)
+            sys.stdout.flush()
 
     print('\nRemoving equivalent slabs...')
     tools.remove_equivalent_slabs(final_slabs)

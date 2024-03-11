@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import codecs
 import os
 
-VERSION = '0.0.7'
+VERSION = '0.0.8'
 DESCRIPTION = 'Package for the generation of non-polar and stoichiometric surfaces from ionic structures.'
 LONG_DESCRIPTION = 'Package for the generation of non-polar and stoichiometric surfaces from ionic structures.'
 
